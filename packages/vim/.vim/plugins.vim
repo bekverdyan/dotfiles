@@ -29,6 +29,8 @@ call plug#begin(plugged_dir)
   Plug 'allophane/vim-theme-frigid'
   Plug 'vim-airline/vim-airline'
   Plug 'ryanoasis/vim-devicons'
+  " Theme
+  Plug 'chriskempson/base16-vim'
   " Syntax
   Plug 'pangloss/vim-javascript'
   Plug 'heavenshell/vim-jsdoc'
