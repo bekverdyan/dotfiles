@@ -28,3 +28,15 @@ source ~/.zsh/history.zsh
 source ~/.zsh/completion.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Added by me
+export CHROME_PATH="/usr/bin/google-chrome-stable"
+export PATH=$PATH:$CHROME_PATH
+export PATH=/home/aram/.cache/yay/bcompare/src/install/bin:$PATH
+export PATH=$PATH:/home/aram/devel/gradle-5.2.1/bin
+export PATH=$PATH:/home/aram/devel/apache-maven-3.6.1/bin
+alias rmorig='find . -name '"'"'*.orig'"'"' -delete'
+alias say='fortune | cowsay -f $(ls /usr/share/cows/ | shuf -n 1)'
+alias bee='fortune | cowsay -f ~/devel/cowsay/cows/sodomized-sheep.cow'
+alias docs-to-pdf='sh ~/devel/docs-to-pdf-converter/docs-to-pdf-converter.sh'
+say
