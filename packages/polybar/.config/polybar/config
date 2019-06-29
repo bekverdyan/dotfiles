@@ -59,23 +59,15 @@ tray-detached = true
 ;wm-restack = bspwm
 wm-restack = i3
 
-[bar/top]
-;monitor = ${env:MONITOR:HDMI-1}
-inherit = bar/common
-
-modules-left = i3
-modules-center = title
-modules-right =  xkeyboard wired-network wireless-network date
-
 [bar/bottom]
-;monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR:eDP-1}
 inherit = bar/common
 
 bottom = true
 
-modules-left = mpd-controls
-modules-center = mpd
-modules-right =  pulseaudio-rofi-output
+modules-left = i3
+modules-center = title
+modules-right =  xkeyboard wired-network wireless-network battery date
 
 [module/title]
 type = internal/xwindow
@@ -101,6 +93,8 @@ scroll-down = ~/.config/polybar/scripts/pulseaudio.sh --volume_down
 [module/i3]
 
 type = internal/i3
+
+; pin-workspaces = true
 ;
 ;strip-wsnumbers = true
 ;
@@ -199,19 +193,56 @@ format-disconnected =
 type = internal/date
 interval = 5
 
-date =
-date-alt = "%Y-%m-%d"
+; date =
+; date-alt = "%Y-%m-%d"
+;
+; time = "%H:%M"
+; time-alt = %H:%M
+;
+; format-padding = 2
 
-time = "%H:%M"
-time-alt = %H:%M
+format = <label>
+label-padding = 1
 
-format-padding = 2
+time = %R
 
-label = %date% %time%
+label = %{A1:gsimplecal & disown:} %{A3:gsimplecal & disown:} %time%%{A} %{A}
 
 ;lable = %time%
 
 ;
+
+[module/battery]
+type = internal/battery
+
+; This is useful in case the battery never reports 100% charge
+full-at = 99
+
+; Use the following command to list batteries and adapters:
+; $ ls -1 /sys/class/power_supply/
+battery = BAT0
+adapter = ADP1
+
+; If an inotify event haven't been reported in this many
+; seconds, manually poll for new values.
+;
+; Needed as a fallback for systems that don't report events
+; on sysfs/procfs.
+;
+; Disable polling by setting the interval to 0.
+;
+; Default: 5
+poll-interval = 5
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+format-discharging = <ramp-capacity> <label-discharging>
+
+
 [module/xkeyboard]
 type = internal/xkeyboard
 blacklist-0 = num lock
