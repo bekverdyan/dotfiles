@@ -5,15 +5,11 @@ set -g status on
 # Colors
 
 # Status bar
-set -g status-bg black
-set -g status-fg white
-set -g status-attr none
+set -g status-style fg=white,bg=black
 
 # Panes
-set -g pane-border-bg black
-set -g pane-border-fg black
-set -g pane-active-border-bg black
-set -g pane-active-border-fg brightblack
+set -g pane-border-style fg=black,bg=black
+set -g pane-active-border-style fg=brightblack,bg=black
 set -g display-panes-colour black
 set -g display-panes-active-colour brightblack
 
@@ -23,10 +19,8 @@ setw -g clock-mode-colour cyan
 
 # Messages
 
-set -g message-fg cyan
-set -g message-bg brightblack
-set -g message-command-fg cyan
-set -g message-command-bg brightblack
+set -g message-style fg=cyan,bg=brightblack
+set -g message-command-style fg=cyan,bg=brightblack
 
 # Content
 
