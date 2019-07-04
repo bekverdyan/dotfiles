@@ -28,3 +28,5 @@ source ~/.zsh/history.zsh
 source ~/.zsh/completion.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export TERM="xterm-256color"
