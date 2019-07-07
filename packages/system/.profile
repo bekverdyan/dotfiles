@@ -43,4 +43,4 @@ if [ -f $usermodmap ]; then
    xmodmap $usermodmap
 fi
 
-xcape -e 'Caps_Lock=Escape'
+# xcape -e 'Caps_Lock=Escape'
