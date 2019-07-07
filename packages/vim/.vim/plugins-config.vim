@@ -28,3 +28,6 @@ nmap <silent> <Leader>d <Plug>(jsdoc)
 
 " move
 let g:move_key_modifier = 'C'
+
+let g:ale_ignore_2_4_warnings = 1
+
