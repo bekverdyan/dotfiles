@@ -16,6 +16,15 @@ let
     red = "#bf616a";
     yellow = "#ebcb8b";
   };
+
+  # Shared by bash and zsh: `f` runs fff, then cds into the dir it was quit in
+  fffCd = ''
+    f() {
+      fff "$@"
+      local d="''${XDG_CACHE_HOME:-$HOME/.cache}/fff/.fff_d"
+      [[ -f $d ]] && cd "$(< "$d")"
+    }
+  '';
 in
 {
   home.username = "aram";
@@ -158,22 +167,59 @@ in
     configPath = "${config.xdg.configHome}/mozilla/firefox";
   };
 
-  # ---------- Shell ----------
+  # ---------- Shells (bash and zsh) ----------
+  home.shellAliases = {
+    ls = "ls --color=auto";
+    grep = "grep --color=auto";
+  };
+
   programs.bash = {
     enable = true;
-    shellAliases = {
-      ls = "ls --color=auto";
-      grep = "grep --color=auto";
-    };
     initExtra = ''
       PS1='[\u@\h \W]\$ '
+      ${fffCd}
+    '';
+  };
 
-      # fff, then cd into the directory it was quit in
-      f() {
-        fff "$@"
-        local d="''${XDG_CACHE_HOME:-$HOME/.cache}/fff/.fff_d"
-        [[ -f $d ]] && cd "$(< "$d")"
-      }
+  programs.zsh = {
+    enable = true;
+    autocd = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    history = {
+      size = 10000;
+      ignoreDups = true;
+      share = true;
+    };
+    initContent = fffCd;
+  };
+
+  # Prompt for zsh, using starship's "pure" preset; bash keeps its own PS1
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = false;
+    settings = builtins.fromTOML (
+      builtins.readFile "${pkgs.starship}/share/starship/presets/pure-preset.toml"
+    );
+  };
+
+  # ---------- Tmux ----------
+  programs.tmux = {
+    enable = true;
+    shell = "${pkgs.zsh}/bin/zsh";
+    terminal = "tmux-256color";
+    prefix = "C-Space";
+    escapeTime = 0; # no lag after Esc in vim
+    mouse = true;
+    plugins = [ pkgs.tmuxPlugins.nord ];
+    extraConfig = ''
+      set -as terminal-features ",alacritty:RGB"
+
+      # Split panes with \ and -, in the current directory
+      bind '\' split-window -h -c "#{pane_current_path}"
+      bind - split-window -v -c "#{pane_current_path}"
+      unbind '"'
+      unbind %
     '';
   };
 
