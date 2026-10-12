@@ -155,6 +155,9 @@ in
     configPath = "${config.xdg.configHome}/mozilla/firefox";
   };
 
+  # Pager used by git, gh and man
+  programs.less.enable = true;
+
   # ---------- Git / GitHub ----------
   programs.git = {
     enable = true;
