@@ -36,6 +36,7 @@ All **(custom)**.
 | `Super+Ctrl+←` / `Super+Ctrl+→` | Rotate screen left / right (portrait) |
 | `Super+Ctrl+↓` | Rotate screen upside down |
 | `Super+Esc` | Reload key bindings |
+| `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |
 | `Super+Alt+Q` | Quit bspwm (log out) |
 

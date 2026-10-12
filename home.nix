@@ -33,6 +33,19 @@ let
       exec startx
     fi
   '';
+
+  # Manjaro-style blurlock: a blurred screenshot of the desktop behind i3lock.
+  # i3lock comes from pacman (`sudo pacman -S i3lock`): a Nix-built one can't
+  # check passwords on Arch, since PAM needs the host's setuid helper.
+  blurlock = pkgs.writeShellScriptBin "blurlock" ''
+    img="''${XDG_RUNTIME_DIR:-/tmp}/blurlock.png"
+    ${pkgs.imagemagick}/bin/magick x:root -scale 20% -blur 0x2.5 -resize 500% -depth 8 "$img"
+    # -n stays in the foreground so xss-lock knows when it's unlocked
+    /usr/bin/i3lock -n -e -f -c ${builtins.substring 1 6 nord.bg} -i "$img" "$@"
+    status=$?
+    rm -f "$img"
+    exit $status
+  '';
 in
 {
   home.username = "aram";
@@ -57,6 +70,7 @@ in
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
     fff # minimal file manager (`f` cds into the dir you quit in)
+    blurlock # lock the screen (also Super+Alt+L)
   ];
 
   home.sessionPath = [ "$HOME/.local/bin" ];
@@ -325,6 +339,16 @@ in
     };
   };
 
+  # ---------- Screen lock ----------
+  # xss-lock runs blurlock after 10 idle minutes and before suspend.
+  # Super+Alt+L locks through logind, so only one locker ever runs.
+  services.screen-locker = {
+    enable = true;
+    lockCmd = "${blurlock}/bin/blurlock";
+    inactiveInterval = 10;
+    xautolock.enable = false; # the X screensaver timer is enough
+  };
+
   # ---------- Keybindings ----------
   services.sxhkd = {
     enable = true;
@@ -334,6 +358,7 @@ in
       "super + b" = "firefox";
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings
       "super + alt + {q,r}" = "bspc {quit,wm -r}"; # quit / restart bspwm
+      "super + alt + l" = "loginctl lock-session"; # blurlock
       "super + {_,shift + }w" = "bspc node -{c,k}"; # close / kill window
       "super + m" = "bspc desktop -l next"; # toggle fullscreen-like monocle
       "super + {t,shift + t,s,f}" = "bspc node -t {tiled,pseudo_tiled,floating,fullscreen}";
