@@ -43,6 +43,7 @@ in
 
   home.packages = with pkgs; [
     htop
+    gtop # system monitor dashboard
     nerd-fonts.jetbrains-mono
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)

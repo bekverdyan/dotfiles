@@ -187,3 +187,15 @@ Nord colors only; keys are vim's defaults. `Caps Lock` works as `Esc`, with no d
 | `F6` | Sort by column |
 | `F9` or `k` | Kill process |
 | `F10` or `q` | Quit |
+
+## gtop
+
+System monitor dashboard (CPU, memory, network, disk, processes). Keys are gtop's defaults.
+
+| Keys | Action |
+|---|---|
+| `c` | Sort processes by CPU |
+| `m` | Sort processes by memory |
+| `p` | Sort processes by PID |
+| Same key again | Reverse the sort order |
+| `q`, `Esc` or `Ctrl+C` | Quit |
