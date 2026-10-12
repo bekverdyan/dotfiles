@@ -5,10 +5,11 @@ let
   #   wallpaper = "${config.home.homeDirectory}/Pictures/wallpaper.jpg";
   wallpaper = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath;
 
-  # Nord colors, shared by bspwm borders and polybar
+  # Nord colors, shared by bspwm borders, polybar and rofi
   nord = {
     bg = "#2e3440";
     bgAlt = "#3b4252";
+    bgHi = "#434c5e";
     fg = "#d8dee9";
     muted = "#4c566a";
     accent = "#88c0d0";
@@ -34,7 +35,6 @@ in
   home.packages = with pkgs; [
     htop
     nerd-fonts.jetbrains-mono
-    rofi # app launcher (super + space)
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
   ];
@@ -43,6 +43,110 @@ in
     EDITOR = "vim";
     TERMINAL = "alacritty";
     BROWSER = "firefox";
+  };
+
+  # ---------- Nord theme for GTK, Qt, icons and cursor ----------
+  # Firefox and most apps follow the GTK theme.
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Nordic";
+      package = pkgs.nordic;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-nord;
+    };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.theme = config.gtk.theme;
+  };
+
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
+  home.pointerCursor = {
+    enable = true;
+    name = "Nordic-cursors";
+    package = pkgs.nordic;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
+  qt = {
+    enable = true;
+    platformTheme.name = "kvantum";
+    style.name = "kvantum";
+  };
+  xdg.configFile = {
+    "Kvantum/Nordic".source = "${pkgs.nordic}/share/Kvantum/Nordic";
+    "Kvantum/kvantum.kvconfig".text = ''
+      [General]
+      theme=Nordic
+    '';
+  };
+
+  # ---------- Rofi (app launcher, super + space) ----------
+  programs.rofi = {
+    enable = true;
+    settings = {
+      terminal = "alacritty";
+      font = "JetBrainsMono Nerd Font 11";
+      show-icons = true;
+      icon-theme = "Papirus-Dark";
+    };
+    theme =
+      let
+        inherit (config.lib.formats.rasi) mkLiteral;
+      in
+      {
+        "*" = {
+          background-color = mkLiteral nord.bg;
+          text-color = mkLiteral nord.fg;
+        };
+        window = {
+          width = mkLiteral "40%";
+          border = mkLiteral "2px";
+          border-color = mkLiteral nord.accent;
+          padding = mkLiteral "12px";
+        };
+        inputbar = {
+          children = map mkLiteral [ "prompt" "entry" ];
+          spacing = mkLiteral "8px";
+          padding = mkLiteral "8px";
+          background-color = mkLiteral nord.bgAlt;
+        };
+        "prompt, entry" = {
+          background-color = mkLiteral "inherit";
+        };
+        prompt.text-color = mkLiteral nord.accent;
+        listview = {
+          lines = 8;
+          padding = mkLiteral "8px 0 0";
+        };
+        element = {
+          padding = mkLiteral "6px 8px";
+          spacing = mkLiteral "8px";
+        };
+        "element selected" = {
+          background-color = mkLiteral nord.bgHi;
+          text-color = mkLiteral nord.accent;
+        };
+        "element-text, element-icon" = {
+          background-color = mkLiteral "inherit";
+          text-color = mkLiteral "inherit";
+        };
+      };
+  };
+
+  # ---------- Vim ----------
+  programs.vim = {
+    enable = true;
+    plugins = [ pkgs.vimPlugins.nord-vim ];
+    extraConfig = ''
+      syntax on
+      colorscheme nord
+    '';
   };
 
   # ---------- Firefox ----------
