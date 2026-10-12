@@ -25,6 +25,14 @@ let
       [[ -f $d ]] && cd "$(< "$d")"
     }
   '';
+
+  # Shared by bash and zsh login shells: logging in on tty1 starts X.
+  # exec, so quitting bspwm logs out instead of leaving a shell behind.
+  startxOnTty1 = ''
+    if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+      exec startx
+    fi
+  '';
 in
 {
   home.username = "aram";
@@ -184,6 +192,7 @@ in
   programs.bash = {
     enable = true;
     initExtra = fffCd;
+    profileExtra = startxOnTty1;
   };
 
   programs.zsh = {
@@ -197,6 +206,7 @@ in
       share = true;
     };
     initContent = fffCd;
+    profileExtra = startxOnTty1;
   };
 
   # Prompt for bash and zsh, using starship's "pure" preset
