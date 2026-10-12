@@ -329,6 +329,10 @@ in
       "super + {t,shift + t,s,f}" = "bspc node -t {tiled,pseudo_tiled,floating,fullscreen}";
       "super + {_,shift + }{h,j,k,l}" = "bspc node -{f,s} {west,south,north,east}";
       "super + {_,shift + }{1-9,0}" = "bspc {desktop -f,node -d} '^{1-9,10}'";
+      # Rotate the laptop screen; restarting bspwm reruns startupPrograms, which
+      # redraws the wallpaper and restarts polybar at the new size
+      "super + ctrl + {Up,Left,Right,Down}" =
+        "${pkgs.xrandr}/bin/xrandr --output eDP-1 --rotate {normal,left,right,inverted} && bspc wm -r";
     };
   };
 

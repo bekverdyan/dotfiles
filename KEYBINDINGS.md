@@ -32,6 +32,9 @@ All **(custom)**.
 | `Super+Shift+T` | Pseudo-tiled |
 | `Super+S` | Floating |
 | `Super+F` | Fullscreen |
+| `Super+Ctrl+↑` | Screen rotation: normal |
+| `Super+Ctrl+←` / `Super+Ctrl+→` | Rotate screen left / right (portrait) |
+| `Super+Ctrl+↓` | Rotate screen upside down |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+R` | Restart bspwm |
 | `Super+Alt+Q` | Quit bspwm (log out) |
