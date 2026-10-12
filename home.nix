@@ -175,10 +175,7 @@ in
 
   programs.bash = {
     enable = true;
-    initExtra = ''
-      PS1='[\u@\h \W]\$ '
-      ${fffCd}
-    '';
+    initExtra = fffCd;
   };
 
   programs.zsh = {
@@ -194,10 +191,9 @@ in
     initContent = fffCd;
   };
 
-  # Prompt for zsh, using starship's "pure" preset; bash keeps its own PS1
+  # Prompt for bash and zsh, using starship's "pure" preset
   programs.starship = {
     enable = true;
-    enableBashIntegration = false;
     settings = builtins.fromTOML (
       builtins.readFile "${pkgs.starship}/share/starship/presets/pure-preset.toml"
     );
