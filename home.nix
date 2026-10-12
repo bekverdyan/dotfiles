@@ -37,7 +37,10 @@ in
     nerd-fonts.jetbrains-mono
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
+    fff # minimal file manager (`f` cds into the dir you quit in)
   ];
+
+  home.sessionPath = [ "$HOME/.local/bin" ];
 
   home.sessionVariables = {
     EDITOR = "vim";
@@ -154,6 +157,48 @@ in
     enable = true;
     configPath = "${config.xdg.configHome}/mozilla/firefox";
   };
+
+  # ---------- Shell ----------
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      ls = "ls --color=auto";
+      grep = "grep --color=auto";
+    };
+    initExtra = ''
+      PS1='[\u@\h \W]\$ '
+
+      # fff, then cd into the directory it was quit in
+      f() {
+        fff "$@"
+        local d="''${XDG_CACHE_HOME:-$HOME/.cache}/fff/.fff_d"
+        [[ -f $d ]] && cd "$(< "$d")"
+      }
+    '';
+  };
+
+  # Fuzzy finder: Ctrl+T files, Ctrl+R history, Alt+C cd
+  programs.fzf = {
+    enable = true;
+    colors = {
+      bg = nord.bg;
+      "bg+" = nord.bgAlt;
+      fg = nord.fg;
+      "fg+" = nord.fg;
+      hl = nord.accent;
+      "hl+" = nord.accent;
+      border = nord.muted;
+      info = nord.yellow;
+      pointer = nord.accent;
+      prompt = nord.accent;
+      marker = nord.yellow;
+    };
+  };
+
+  # `z <part of a dir>` jumps to frequently used dirs, `zi` picks with fzf
+  programs.zoxide.enable = true;
+
+  programs.ranger.enable = true;
 
   # Pager used by git, gh and man
   programs.less.enable = true;
