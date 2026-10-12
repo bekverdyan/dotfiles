@@ -44,6 +44,7 @@ in
   home.packages = with pkgs; [
     htop
     gtop # system monitor dashboard
+    gotop # system monitor, Nord colors (see the gotop section)
     nerd-fonts.jetbrains-mono
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
@@ -161,6 +162,12 @@ in
       colorscheme nord
     '';
   };
+
+  # ---------- gotop (system monitor) ----------
+  # Unset keys keep gotop's defaults
+  xdg.configFile."gotop/gotop.conf".text = ''
+    colorscheme=nord
+  '';
 
   # ---------- Firefox ----------
   programs.firefox = {

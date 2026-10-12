@@ -199,3 +199,19 @@ System monitor dashboard (CPU, memory, network, disk, processes). Keys are gtop'
 | `p` | Sort processes by PID |
 | Same key again | Reverse the sort order |
 | `q`, `Esc` or `Ctrl+C` | Quit |
+
+## gotop
+
+System monitor (CPU, memory, temperatures, network, disk, processes), in Nord colors **(custom)**. Keys are gotop's defaults; `?` shows them all.
+
+| Keys | Action |
+|---|---|
+| `j` / `k` | Move down / up the process list |
+| `gg` / `G` | Jump to top / bottom |
+| `c` / `m` / `p` / `n` | Sort processes by CPU / memory / PID / command |
+| `/` | Filter processes (`Enter` keeps it, `Esc` clears it) |
+| `Tab` | Group processes by name |
+| `dd` | Kill the selected process (SIGTERM) |
+| `d9` | Kill the selected process (SIGKILL) |
+| `h` / `l` | Zoom the CPU and memory graphs in / out |
+| `q` or `Ctrl+C` | Quit |
