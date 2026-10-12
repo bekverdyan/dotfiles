@@ -311,7 +311,7 @@ in
   services.sxhkd = {
     enable = true;
     keybindings = {
-      "super + Return" = "alacritty";
+      "super + Return" = "alacritty -e tmux"; # new tmux session per terminal
       "super + space" = "rofi -show drun";
       "super + b" = "firefox";
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings

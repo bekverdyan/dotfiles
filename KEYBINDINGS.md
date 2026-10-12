@@ -18,7 +18,7 @@ All **(custom)**.
 
 | Keys | Action |
 |---|---|
-| `Super+Enter` | Open terminal (Alacritty) |
+| `Super+Enter` | Open terminal (Alacritty) running a new tmux session |
 | `Super+Space` | App launcher (rofi) |
 | `Super+B` | Open Firefox |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
