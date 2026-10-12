@@ -5,16 +5,26 @@ let
   #   wallpaper = "${config.home.homeDirectory}/Pictures/wallpaper.jpg";
   wallpaper = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath;
 
-  # Nord colors, shared by bspwm borders and polybar
+  # Nord colors, shared by bspwm borders, polybar and rofi
   nord = {
     bg = "#2e3440";
     bgAlt = "#3b4252";
+    bgHi = "#434c5e";
     fg = "#d8dee9";
     muted = "#4c566a";
     accent = "#88c0d0";
     red = "#bf616a";
     yellow = "#ebcb8b";
   };
+
+  # Shared by bash and zsh: `f` runs fff, then cds into the dir it was quit in
+  fffCd = ''
+    f() {
+      fff "$@"
+      local d="''${XDG_CACHE_HOME:-$HOME/.cache}/fff/.fff_d"
+      [[ -f $d ]] && cd "$(< "$d")"
+    }
+  '';
 in
 {
   home.username = "aram";
@@ -34,10 +44,12 @@ in
   home.packages = with pkgs; [
     htop
     nerd-fonts.jetbrains-mono
-    rofi # app launcher (super + space)
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
+    fff # minimal file manager (`f` cds into the dir you quit in)
   ];
+
+  home.sessionPath = [ "$HOME/.local/bin" ];
 
   home.sessionVariables = {
     EDITOR = "vim";
@@ -45,11 +57,193 @@ in
     BROWSER = "firefox";
   };
 
+  # ---------- Nord theme for GTK, Qt, icons and cursor ----------
+  # Firefox and most apps follow the GTK theme.
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Nordic";
+      package = pkgs.nordic;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-nord;
+    };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = 1;
+    gtk4.theme = config.gtk.theme;
+  };
+
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
+
+  home.pointerCursor = {
+    enable = true;
+    name = "Nordic-cursors";
+    package = pkgs.nordic;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
+  qt = {
+    enable = true;
+    platformTheme.name = "kvantum";
+    style.name = "kvantum";
+  };
+  xdg.configFile = {
+    "Kvantum/Nordic".source = "${pkgs.nordic}/share/Kvantum/Nordic";
+    "Kvantum/kvantum.kvconfig".text = ''
+      [General]
+      theme=Nordic
+    '';
+  };
+
+  # ---------- Rofi (app launcher, super + space) ----------
+  programs.rofi = {
+    enable = true;
+    settings = {
+      terminal = "alacritty";
+      font = "JetBrainsMono Nerd Font 11";
+      show-icons = true;
+      icon-theme = "Papirus-Dark";
+    };
+    theme =
+      let
+        inherit (config.lib.formats.rasi) mkLiteral;
+      in
+      {
+        "*" = {
+          background-color = mkLiteral nord.bg;
+          text-color = mkLiteral nord.fg;
+        };
+        window = {
+          width = mkLiteral "40%";
+          border = mkLiteral "2px";
+          border-color = mkLiteral nord.accent;
+          padding = mkLiteral "12px";
+        };
+        inputbar = {
+          children = map mkLiteral [ "prompt" "entry" ];
+          spacing = mkLiteral "8px";
+          padding = mkLiteral "8px";
+          background-color = mkLiteral nord.bgAlt;
+        };
+        "prompt, entry" = {
+          background-color = mkLiteral "inherit";
+        };
+        prompt.text-color = mkLiteral nord.accent;
+        listview = {
+          lines = 8;
+          padding = mkLiteral "8px 0 0";
+        };
+        element = {
+          padding = mkLiteral "6px 8px";
+          spacing = mkLiteral "8px";
+        };
+        "element selected" = {
+          background-color = mkLiteral nord.bgHi;
+          text-color = mkLiteral nord.accent;
+        };
+        "element-text, element-icon" = {
+          background-color = mkLiteral "inherit";
+          text-color = mkLiteral "inherit";
+        };
+      };
+  };
+
+  # ---------- Vim ----------
+  programs.vim = {
+    enable = true;
+    plugins = [ pkgs.vimPlugins.nord-vim ];
+    extraConfig = ''
+      syntax on
+      colorscheme nord
+    '';
+  };
+
   # ---------- Firefox ----------
   programs.firefox = {
     enable = true;
     configPath = "${config.xdg.configHome}/mozilla/firefox";
   };
+
+  # ---------- Shells (bash and zsh) ----------
+  home.shellAliases = {
+    ls = "ls --color=auto";
+    grep = "grep --color=auto";
+  };
+
+  programs.bash = {
+    enable = true;
+    initExtra = fffCd;
+  };
+
+  programs.zsh = {
+    enable = true;
+    autocd = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    history = {
+      size = 10000;
+      ignoreDups = true;
+      share = true;
+    };
+    initContent = fffCd;
+  };
+
+  # Prompt for bash and zsh, using starship's "pure" preset
+  programs.starship = {
+    enable = true;
+    settings = builtins.fromTOML (
+      builtins.readFile "${pkgs.starship}/share/starship/presets/pure-preset.toml"
+    );
+  };
+
+  # ---------- Tmux ----------
+  programs.tmux = {
+    enable = true;
+    shell = "${pkgs.zsh}/bin/zsh";
+    terminal = "tmux-256color";
+    prefix = "C-Space";
+    escapeTime = 0; # no lag after Esc in vim
+    mouse = true;
+    plugins = [ pkgs.tmuxPlugins.nord ];
+    extraConfig = ''
+      set -as terminal-features ",alacritty:RGB"
+
+      # Split panes with \ and -, in the current directory
+      bind '\' split-window -h -c "#{pane_current_path}"
+      bind - split-window -v -c "#{pane_current_path}"
+      unbind '"'
+      unbind %
+    '';
+  };
+
+  # Fuzzy finder: Ctrl+T files, Ctrl+R history, Alt+C cd
+  programs.fzf = {
+    enable = true;
+    colors = {
+      bg = nord.bg;
+      "bg+" = nord.bgAlt;
+      fg = nord.fg;
+      "fg+" = nord.fg;
+      hl = nord.accent;
+      "hl+" = nord.accent;
+      border = nord.muted;
+      info = nord.yellow;
+      pointer = nord.accent;
+      prompt = nord.accent;
+      marker = nord.yellow;
+    };
+  };
+
+  # `z <part of a dir>` jumps to frequently used dirs, `zi` picks with fzf
+  programs.zoxide.enable = true;
+
+  programs.ranger.enable = true;
+
+  # Pager used by git, gh and man
+  programs.less.enable = true;
 
   # ---------- Git / GitHub ----------
   programs.git = {
@@ -104,8 +298,8 @@ in
         "Pavucontrol".state = "floating";
       };
       startupPrograms = [
-        # US and Armenian keyboard layouts, switch with Alt+Shift
-        "${pkgs.setxkbmap}/bin/setxkbmap -layout us,am -option grp:alt_shift_toggle"
+        # US and Armenian keyboard layouts, switch with Alt+Shift; Caps Lock acts as Esc
+        "${pkgs.setxkbmap}/bin/setxkbmap -layout us,am -option grp:alt_shift_toggle,caps:escape"
         "${pkgs.feh}/bin/feh --no-fehbg --bg-fill ${wallpaper}"
         # Restart the bar once bspwm runs, so the desktop list connects
         "systemctl --user restart polybar"
@@ -117,7 +311,7 @@ in
   services.sxhkd = {
     enable = true;
     keybindings = {
-      "super + Return" = "alacritty";
+      "super + Return" = "alacritty -e tmux"; # new tmux session per terminal
       "super + space" = "rofi -show drun";
       "super + b" = "firefox";
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings
