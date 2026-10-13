@@ -132,17 +132,6 @@ sudo systemctl enable --now NetworkManager bluetooth power-profiles-daemon
 
 Connect to Wi-Fi from a TTY with `nmtui`.
 
-## 8. Other host tools
-
-```sh
-sudo pacman -S tmux qrencode
-```
-
-| Package | Why |
-| --- | --- |
-| `tmux` | a system copy, outside Nix (Home Manager also provides one, configured in Nord) |
-| `qrencode` | make QR codes in the terminal |
-
 ## Optional: zsh as the login shell
 
 zsh is installed and configured by Home Manager, but the login shell is still
@@ -162,7 +151,7 @@ sudo pacman -S --needed nix xorg-server xorg-xinit mesa xf86-video-nouveau \
   vulkan-nouveau lightdm lightdm-slick-greeter papirus-icon-theme i3lock \
   pipewire pipewire-pulse pipewire-alsa pipewire-jack wireplumber \
   gst-plugin-pipewire libpulse networkmanager wpa_supplicant bluez \
-  bluez-utils power-profiles-daemon tmux qrencode
+  bluez-utils power-profiles-daemon
 ```
 
 Then do the setup steps from sections 2, 4 and 7.
