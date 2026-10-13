@@ -39,6 +39,11 @@ let
     exit $status
   '';
 
+  # Set the screen brightness: `${setBrightness} 5%+`. The sysfs file is
+  # root-only, so brightnessctl goes through logind. -n6000 (5% of the
+  # panel's 120000) keeps the screen from going fully black.
+  setBrightness = "${pkgs.brightnessctl}/bin/brightnessctl -q -d intel_backlight -n6000 set";
+
   # LightDM login screen (slick-greeter) in Nord. The greeter runs as the
   # `lightdm` user and can't see the Nix profile, so `sudo lightdm-setup`
   # copies the theme, cursor, font, wallpaper and config into the system.
@@ -413,6 +418,8 @@ in
       "XF86Audio{Raise,Lower}Volume" =
         "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%{+,-}";
       "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+      # Laptop brightness keys
+      "XF86MonBrightness{Up,Down}" = "${setBrightness} 5%{+,-}";
     };
   };
 
@@ -461,7 +468,7 @@ in
         };
         modules.left = "bspwm";
         modules.center = "title";
-        modules.right = "pulseaudio wifi battery date";
+        modules.right = "backlight pulseaudio wifi battery date";
         wm-restack = "bspwm";
       };
 
@@ -499,6 +506,17 @@ in
           foreground = nord.muted;
         };
         click.right = "pavucontrol";
+      };
+
+      # Polybar's own scrolling writes to the root-only sysfs file, so
+      # scroll actions run brightnessctl instead (A4 up, A5 down)
+      "module/backlight" = {
+        type = "internal/backlight";
+        card = "intel_backlight";
+        use-actual-brightness = true;
+        enable-scroll = false;
+        format = "%{A4:${setBrightness} 5%+:}%{A5:${setBrightness} 5%-:}<label>%{A}%{A}";
+        label = "BRI %percentage%%";
       };
 
       "module/wifi" = {

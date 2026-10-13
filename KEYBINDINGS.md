@@ -38,6 +38,7 @@ All **(custom)**.
 | `Super+Ctrl+↓` | Rotate screen upside down |
 | `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
 | `Mute` | Mute / unmute |
+| `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (min 5%) |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |
@@ -51,6 +52,7 @@ All **(custom)**.
 | Left-click volume | Mute / unmute |
 | Scroll on volume | Volume up / down |
 | Left-click Wi-Fi name | Open the Wi-Fi menu **(custom)** |
+| Scroll on brightness (`BRI`) | Screen brightness up / down by 5% **(custom)** |
 
 ## Wi-Fi menu (networkmanager_dmenu, `Super+N`)
 
