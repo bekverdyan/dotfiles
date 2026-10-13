@@ -26,14 +26,6 @@ let
     }
   '';
 
-  # Shared by bash and zsh login shells: logging in on tty1 starts X.
-  # exec, so quitting bspwm logs out instead of leaving a shell behind.
-  startxOnTty1 = ''
-    if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-      exec startx
-    fi
-  '';
-
   # Manjaro-style blurlock: a blurred screenshot of the desktop behind i3lock.
   # i3lock comes from pacman (`sudo pacman -S i3lock`): a Nix-built one can't
   # check passwords on Arch, since PAM needs the host's setuid helper.
@@ -255,7 +247,6 @@ in
   programs.bash = {
     enable = true;
     initExtra = fffCd;
-    profileExtra = startxOnTty1;
   };
 
   programs.zsh = {
@@ -269,7 +260,6 @@ in
       share = true;
     };
     initContent = fffCd;
-    profileExtra = startxOnTty1;
   };
 
   # Prompt for bash and zsh, using starship's "pure" preset
