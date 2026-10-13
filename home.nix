@@ -407,6 +407,10 @@ in
       # redraws the wallpaper and restarts polybar at the new size
       "super + ctrl + {Up,Left,Right,Down}" =
         "${pkgs.xrandr}/bin/xrandr --output eDP-1 --rotate {normal,left,right,inverted} && bspc wm -r";
+      # Laptop volume keys; -l 1.0 caps the volume at 100%
+      "XF86Audio{Raise,Lower}Volume" =
+        "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%{+,-}";
+      "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
     };
   };
 

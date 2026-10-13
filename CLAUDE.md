@@ -96,7 +96,7 @@ Current custom bindings, in short:
 - sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
-  `Alt+Q` quit.
+  `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%).
 - Keyboard: layouts `us,am` toggled with `Alt+Shift`; `Caps Lock` is `Esc`
   (`caps:escape`, set via `setxkbmap` in bspwm `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;

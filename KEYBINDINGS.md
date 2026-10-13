@@ -35,6 +35,8 @@ All **(custom)**.
 | `Super+Ctrl+↑` | Screen rotation: normal |
 | `Super+Ctrl+←` / `Super+Ctrl+→` | Rotate screen left / right (portrait) |
 | `Super+Ctrl+↓` | Rotate screen upside down |
+| `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
+| `Mute` | Mute / unmute |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |
