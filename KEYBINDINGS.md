@@ -21,6 +21,7 @@ All **(custom)**.
 | `Super+Enter` | Open terminal (Alacritty) running a new tmux session |
 | `Super+Space` | App launcher (rofi) |
 | `Super+B` | Open Firefox |
+| `Super+N` | Wi-Fi menu (networkmanager_dmenu) |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
 | `Super+1` … `Super+0` | Go to desktop 1 … 10 |
@@ -49,6 +50,23 @@ All **(custom)**.
 | Right-click volume | Open volume mixer (pavucontrol) **(custom)** |
 | Left-click volume | Mute / unmute |
 | Scroll on volume | Volume up / down |
+| Left-click Wi-Fi name | Open the Wi-Fi menu **(custom)** |
+
+## Wi-Fi menu (networkmanager_dmenu, `Super+N`)
+
+Runs in rofi, so rofi's keys apply: type to filter, `Enter` to pick, `Esc`
+to close. The active network is highlighted.
+
+| Entry | Action |
+|---|---|
+| A network name | Connect (asks for the password the first time) |
+| Disable / Enable WiFi | Turn the Wi-Fi radio off / on |
+| Disable / Enable Networking | Turn all networking off / on |
+| Disable / Enable Bluetooth | Turn Bluetooth off / on |
+| Rescan WiFi Networks | Search again for networks |
+| Delete a Connection | Forget a saved network |
+| Show WiFi password | Show the current network's password and QR code |
+| Launch Connection Manager | Open `nmtui` in Alacritty (edit connections, VPNs) **(custom)** |
 
 ## rofi (app launcher)
 

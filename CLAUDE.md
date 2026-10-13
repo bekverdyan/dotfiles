@@ -93,7 +93,8 @@ app with keys worth knowing, **update `KEYBINDINGS.md` in the same
 commit**, marking user-set bindings **(custom)**.
 
 Current custom bindings, in short:
-- sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `H/J/K/L`
+- sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `N` Wi-Fi
+  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%).

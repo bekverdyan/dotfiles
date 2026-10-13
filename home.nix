@@ -111,6 +111,7 @@ in
     pavucontrol # volume mixer (click the volume in the bar)
     fff # minimal file manager (`f` cds into the dir you quit in)
     blurlock # lock the screen (also Super+Alt+L)
+    networkmanager_dmenu # Wi-Fi menu in rofi (Super+N, or click Wi-Fi in the bar)
     lightdmSetup # `sudo lightdm-setup` installs the login screen
   ];
 
@@ -395,6 +396,7 @@ in
       "super + Return" = "alacritty -e tmux"; # new tmux session per terminal
       "super + space" = "rofi -show drun";
       "super + b" = "firefox";
+      "super + n" = "networkmanager_dmenu"; # Wi-Fi menu
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings
       "super + alt + {q,r}" = "bspc {quit,wm -r}"; # quit / restart bspwm
       "super + alt + l" = "loginctl lock-session"; # blurlock
@@ -413,6 +415,31 @@ in
       "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
     };
   };
+
+  # ---------- Wi-Fi menu (super + n, or click Wi-Fi in the bar) ----------
+  # networkmanager_dmenu: pick, connect to and manage networks in rofi.
+  # `%%` is a literal `%` (Python ConfigParser).
+  xdg.configFile."networkmanager-dmenu/config.ini".text = ''
+    [dmenu]
+    dmenu_command = rofi -dmenu -i -theme-str 'window {width: 30%%;}'
+    highlight = True
+    compact = True
+    prompt = Wi-Fi
+
+    [dmenu_passphrase]
+    # Hides the password as you type (rofi -password)
+    obscure = True
+    show_pass = alacritty --hold -e nmcli device wifi show-password
+
+    [editor]
+    # "Launch Connection Manager" opens nmtui in Alacritty
+    terminal = alacritty
+    gui_if_available = False
+
+    [nmdm]
+    # No notification daemon is running
+    show_notifications = False
+  '';
 
   # ---------- Status bar ----------
   services.polybar = {
@@ -482,6 +509,9 @@ in
           text = "offline";
           foreground = nord.muted;
         };
+        # Wrap the label in a click action that opens the Wi-Fi menu
+        format.connected = "%{A1:networkmanager_dmenu &:}<label-connected>%{A}";
+        format.disconnected = "%{A1:networkmanager_dmenu &:}<label-disconnected>%{A}";
       };
 
       # Check the names with: ls /sys/class/power_supply
