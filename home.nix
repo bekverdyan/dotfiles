@@ -508,4 +508,8 @@ in
       };
     };
   };
+  # The service's PATH is only polybar itself; add the Home Manager profile
+  # and the host so click actions (pavucontrol, Wi-Fi menu) can run
+  systemd.user.services.polybar.Service.Environment = pkgs.lib.mkForce
+    "PATH=${config.services.polybar.package}/bin:${config.home.profileDirectory}/bin:/usr/bin";
 }
