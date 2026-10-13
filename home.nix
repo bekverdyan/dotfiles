@@ -40,9 +40,9 @@ let
   '';
 
   # Set the screen brightness: `${setBrightness} 5%+`. The sysfs file is
-  # root-only, so brightnessctl goes through logind. -n6000 (5% of the
-  # panel's 120000) keeps the screen from going fully black.
-  setBrightness = "${pkgs.brightnessctl}/bin/brightnessctl -q -d intel_backlight -n6000 set";
+  # root-only, so brightnessctl goes through logind. -n0 lets it reach 0%
+  # (backlight off; brightness up brings it back).
+  setBrightness = "${pkgs.brightnessctl}/bin/brightnessctl -q -d intel_backlight -n0 set";
 
   # LightDM login screen (slick-greeter) in Nord. The greeter runs as the
   # `lightdm` user and can't see the Nix profile, so `sudo lightdm-setup`

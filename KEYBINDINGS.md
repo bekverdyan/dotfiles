@@ -38,7 +38,7 @@ All **(custom)**.
 | `Super+Ctrl+↓` | Rotate screen upside down |
 | `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
 | `Mute` | Mute / unmute |
-| `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (min 5%) |
+| `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (down to 0%, backlight off) |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |

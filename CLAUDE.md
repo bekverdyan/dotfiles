@@ -99,7 +99,7 @@ Current custom bindings, in short:
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
   brightness keys and scroll on polybar's `BRI` via `brightnessctl`
-  (through logind, since the sysfs file is root-only; floor 5%).
+  (through logind, since the sysfs file is root-only; down to 0%).
 - Keyboard: layouts `us,am` toggled with `Alt+Shift`; `Caps Lock` is `Esc`
   (`caps:escape`, set via `setxkbmap` in bspwm `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;
