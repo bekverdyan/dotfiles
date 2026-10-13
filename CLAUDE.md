@@ -21,7 +21,10 @@ theme) is defined here.
 
 - Arch Linux, **not NixOS**: `targets.genericLinux.enable = true`. Nix
   programs use the host GPU drivers via `targets.genericLinux.gpu`.
-- X11 session started with `startx`; Home Manager writes `~/.xinitrc`.
+- X11 session started by LightDM (slick-greeter, Nord), whose `bspwm`
+  session runs the `~/.xinitrc` Home Manager writes. LightDM's files live
+  outside `$HOME`: after changing them in `home.nix`, the user reruns
+  `sudo lightdm-setup`.
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,
