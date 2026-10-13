@@ -12,6 +12,8 @@ theme) is defined here.
 - `home.nix`: the whole configuration, in one file, split by
   `# ---------- Section ----------` comments.
 - `KEYBINDINGS.md`: user-facing cheat sheet of every key binding.
+- `HOST-PACKAGES.md`: what must come from pacman (not Nix) and its
+  one-time root setup. Update it when a change needs a host package.
 - `.gitignore`: `*.bak`, `result`, `result-*`.
 
 `~/.config/home-manager` is a symlink to this repo (`~/dotfiles`), so
