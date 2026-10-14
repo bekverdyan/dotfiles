@@ -492,7 +492,7 @@ in
         };
         modules.left = "bspwm";
         modules.center = "title";
-        modules.right = "backlight pulseaudio wifi battery date";
+        modules.right = "xkeyboard backlight pulseaudio wifi battery date";
         wm-restack = "bspwm";
       };
 
@@ -530,6 +530,17 @@ in
           foreground = nord.muted;
         };
         click.right = "pavucontrol";
+      };
+
+      # Active keyboard layout (switch with Alt+Shift)
+      "module/xkeyboard" = {
+        type = "internal/xkeyboard";
+        format = "<label-layout>"; # no Caps/Num Lock indicators
+        layout.icon = [ "us;EN" "am;HY" "ru;RU" ];
+        label.layout = {
+          text = "%icon%";
+          foreground = nord.accent;
+        };
       };
 
       # Polybar's own scrolling writes to the root-only sysfs file, so

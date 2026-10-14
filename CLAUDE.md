@@ -102,7 +102,8 @@ Current custom bindings, in short:
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
   brightness keys and scroll on polybar's `BRI` via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%).
-- Keyboard: layouts `us,am,ru` (ru `phonetic`) cycled with `Alt+Shift`;
+- Keyboard: layouts `us,am,ru` (ru `phonetic`) cycled with `Alt+Shift`,
+  shown in polybar as `EN`/`HY`/`RU` (xkeyboard module);
   `Caps Lock` is `Esc` (`caps:escape`, set via `setxkbmap` in bspwm
   `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;
