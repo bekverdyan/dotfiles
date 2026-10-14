@@ -102,8 +102,9 @@ Current custom bindings, in short:
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
   brightness keys and scroll on polybar's `BRI` via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%).
-- Keyboard: layouts `us,am` toggled with `Alt+Shift`; `Caps Lock` is `Esc`
-  (`caps:escape`, set via `setxkbmap` in bspwm `startupPrograms`).
+- Keyboard: layouts `us,am,ru` (ru `phonetic`) cycled with `Alt+Shift`;
+  `Caps Lock` is `Esc` (`caps:escape`, set via `setxkbmap` in bspwm
+  `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;
   `escapeTime = 0` so `Esc` has no delay in vim.
 - Shell: `f` runs fff and `cd`s into the directory it was quit in;

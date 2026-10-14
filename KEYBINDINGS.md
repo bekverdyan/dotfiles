@@ -9,7 +9,7 @@ Bindings marked **(custom)** are set in `home.nix`; the rest are the app's defau
 
 | Keys | Action |
 |---|---|
-| `Alt+Shift` | Switch layout: US ↔ Armenian **(custom)** |
+| `Alt+Shift` | Switch layout: US → Armenian → Russian (phonetic) → US **(custom)** |
 | `Caps Lock` | Acts as `Esc` **(custom)** |
 
 ## bspwm + sxhkd (window manager)
