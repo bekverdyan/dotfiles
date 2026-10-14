@@ -91,6 +91,28 @@ let
     install -Dm644 ${bspwmSession} /usr/share/xsessions/bspwm.desktop
     echo "LightDM is set up. Enable it with: sudo systemctl enable lightdm"
   '';
+
+  # Battery charge limits, kept by the Dell firmware (dell_laptop driver):
+  # charging stops at `end` and starts again below `start`. Dell allows
+  # start 50-95 and end 55-100, at least 5 apart. Writing needs root, so
+  # `sudo battery-setup` applies them and installs a tmpfiles rule that
+  # reapplies them at boot. Rerun it after changing them.
+  battery = { start = 50; end = 100; };
+  # Lines run in this order: end before start, so the 5-point gap always
+  # holds, then Custom mode so the firmware uses the thresholds
+  batteryTmpfiles = pkgs.writeText "battery-charge.conf" ''
+    w /sys/class/power_supply/BAT0/charge_control_end_threshold - - - - ${toString battery.end}
+    w /sys/class/power_supply/BAT0/charge_control_start_threshold - - - - ${toString battery.start}
+    w /sys/class/power_supply/BAT0/charge_types - - - - Custom
+  '';
+  batterySetup = pkgs.writeShellScriptBin "battery-setup" ''
+    set -eu
+    [ "$(id -u)" = 0 ] || { echo "run it with sudo" >&2; exit 1; }
+    install -Dm644 ${batteryTmpfiles} /etc/tmpfiles.d/battery-charge.conf
+    systemd-tmpfiles --create /etc/tmpfiles.d/battery-charge.conf
+    cd /sys/class/power_supply/BAT0
+    echo "Charge from $(cat charge_control_start_threshold)% to $(cat charge_control_end_threshold)%, mode: $(cat charge_types)"
+  '';
 in
 {
   home.username = "aram";
@@ -118,6 +140,7 @@ in
     blurlock # lock the screen (also Super+Alt+L)
     networkmanager_dmenu # Wi-Fi menu in rofi (Super+N, or click Wi-Fi in the bar)
     lightdmSetup # `sudo lightdm-setup` installs the login screen
+    batterySetup # `sudo battery-setup` sets the battery charge limits
   ];
 
   home.sessionPath = [ "$HOME/.local/bin" ];

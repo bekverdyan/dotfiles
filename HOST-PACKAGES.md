@@ -132,6 +132,21 @@ sudo systemctl enable --now NetworkManager bluetooth power-profiles-daemon
 
 Connect to Wi-Fi from a TTY with `nmtui`.
 
+## 8. Battery charge limits
+
+No package needed: the `dell_laptop` kernel driver controls charging. The
+limits are set in `home.nix` (`battery`: stop at 100%, start again below
+50%). Writing them needs root:
+
+```sh
+sudo "$(command -v battery-setup)"
+```
+
+It applies the limits now and installs `/etc/tmpfiles.d/battery-charge.conf`,
+which reapplies them at every boot. Rerun it after changing the limits.
+Dell firmware only allows a start of 50–95% and a stop of 55–100%, at least
+5 apart. To check: `cat /sys/class/power_supply/BAT0/charge_*`.
+
 ## Optional: zsh as the login shell
 
 zsh is installed and configured by Home Manager, but the login shell is still
@@ -154,4 +169,4 @@ sudo pacman -S --needed nix xorg-server xorg-xinit mesa xf86-video-nouveau \
   bluez-utils power-profiles-daemon
 ```
 
-Then do the setup steps from sections 2, 4 and 7.
+Then do the setup steps from sections 2, 4, 7 and 8.

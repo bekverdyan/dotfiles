@@ -27,6 +27,8 @@ theme) is defined here.
   session runs the `~/.xinitrc` Home Manager writes. LightDM's files live
   outside `$HOME`: after changing them in `home.nix`, the user reruns
   `sudo lightdm-setup`.
+- Dell Inspiron 7786. Battery charge limits (`battery` in `home.nix`, Dell
+  allows start 50–95, end 55–100) are applied by `sudo battery-setup`.
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,
