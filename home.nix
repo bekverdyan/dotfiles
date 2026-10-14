@@ -563,7 +563,7 @@ in
         full.at = 99;
         label.charging = "CHG %percentage%%";
         label.discharging = "BAT %percentage%%";
-        label.full = "FULL";
+        label.full = "BAT %percentage%%";
         label.low = {
           text = "LOW %percentage%%";
           foreground = nord.yellow;
