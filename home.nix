@@ -360,6 +360,9 @@ in
   home.shellAliases = {
     ls = "ls --color=auto";
     grep = "grep --color=auto";
+    # Full store paths: sudo doesn't search the Nix profile
+    battery-setup = "sudo ${batterySetup}/bin/battery-setup";
+    battery-full = "sudo ${batteryFull}/bin/battery-full";
   };
 
   programs.bash = {

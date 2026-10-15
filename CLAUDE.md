@@ -30,7 +30,8 @@ theme) is defined here.
 - Dell Inspiron 7786. Battery charge limits (`battery` in `home.nix`, Dell
   allows start 50–95, end 55–100; set to 75–80 since it is mostly plugged
   in) are applied by `sudo battery-setup`; `sudo battery-full` sets 95–100
-  until the next boot.
+  until the next boot. Both are also shell aliases that run them with sudo
+  (sudo doesn't search the Nix profile).
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,

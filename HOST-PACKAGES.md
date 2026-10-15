@@ -139,7 +139,7 @@ limits are set in `home.nix` (`battery`: stop at 80%, start again below
 75%, for a laptop that is mostly plugged in). Writing them needs root:
 
 ```sh
-sudo "$(command -v battery-setup)"
+battery-setup   # alias for: sudo "$(command -v battery-setup)"
 ```
 
 It applies the limits now and installs `/etc/tmpfiles.d/battery-charge.conf`,
@@ -148,8 +148,9 @@ Dell firmware only allows a start of 50–95% and a stop of 55–100%, at least
 5 apart. To check: `cat /sys/class/power_supply/BAT0/charge_*`.
 
 To charge to 100% once, e.g. before a trip, run
-`sudo "$(command -v battery-full)"`, which sets the limits to 95–100%. It
-lasts until the next boot, or until `battery-setup` is run again.
+`battery-full` (a shell alias that runs it with sudo), which sets the limits
+to 95–100%. It lasts until the next boot, or until `battery-setup` is run
+again.
 
 ## Optional: zsh as the login shell
 
