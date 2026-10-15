@@ -96,22 +96,40 @@ let
   # charging stops at `end` and starts again below `start`. Dell allows
   # start 50-95 and end 55-100, at least 5 apart. Writing needs root, so
   # `sudo battery-setup` applies them and installs a tmpfiles rule that
-  # reapplies them at boot. Rerun it after changing them.
-  battery = { start = 50; end = 100; };
-  # Lines run in this order: end before start, so the 5-point gap always
-  # holds, then Custom mode so the firmware uses the thresholds
+  # reapplies them at boot. Rerun it after changing them. 75-80 suits a
+  # laptop that is mostly plugged in; `sudo battery-full` sets 95-100 to
+  # charge to full until the next boot (or `sudo battery-setup`).
+  battery = { start = 75; end = 80; };
+  # The stop must stay at least 5 above the start, so the order of writes
+  # matters. At boot, start goes first: that lowers a leftover battery-full
+  # 95-100 before the stop comes down. Then Custom mode, so the firmware
+  # uses the thresholds
   batteryTmpfiles = pkgs.writeText "battery-charge.conf" ''
-    w /sys/class/power_supply/BAT0/charge_control_end_threshold - - - - ${toString battery.end}
     w /sys/class/power_supply/BAT0/charge_control_start_threshold - - - - ${toString battery.start}
+    w /sys/class/power_supply/BAT0/charge_control_end_threshold - - - - ${toString battery.end}
     w /sys/class/power_supply/BAT0/charge_types - - - - Custom
   '';
   batterySetup = pkgs.writeShellScriptBin "battery-setup" ''
     set -eu
     [ "$(id -u)" = 0 ] || { echo "run it with sudo" >&2; exit 1; }
     install -Dm644 ${batteryTmpfiles} /etc/tmpfiles.d/battery-charge.conf
-    systemd-tmpfiles --create /etc/tmpfiles.d/battery-charge.conf
     cd /sys/class/power_supply/BAT0
+    # Start at the minimum first, so any new pair can be written after it
+    echo 50 > charge_control_start_threshold
+    echo ${toString battery.end} > charge_control_end_threshold
+    echo ${toString battery.start} > charge_control_start_threshold
+    echo Custom > charge_types
     echo "Charge from $(cat charge_control_start_threshold)% to $(cat charge_control_end_threshold)%, mode: $(cat charge_types)"
+  '';
+  # Charging only begins below the start, so lift both (the highest Dell
+  # allows) to charge now, even from 76-80%
+  batteryFull = pkgs.writeShellScriptBin "battery-full" ''
+    set -eu
+    [ "$(id -u)" = 0 ] || { echo "run it with sudo" >&2; exit 1; }
+    cd /sys/class/power_supply/BAT0
+    echo 100 > charge_control_end_threshold
+    echo 95 > charge_control_start_threshold
+    echo "Charging to 100% until reboot; battery-setup restores ${toString battery.start}-${toString battery.end}%"
   '';
 in
 {
@@ -141,6 +159,7 @@ in
     networkmanager_dmenu # Wi-Fi menu in rofi (Super+N, or click Wi-Fi in the bar)
     lightdmSetup # `sudo lightdm-setup` installs the login screen
     batterySetup # `sudo battery-setup` sets the battery charge limits
+    batteryFull # `sudo battery-full` charges to 100% once, e.g. before a trip
   ];
 
   home.sessionPath = [ "$HOME/.local/bin" ];

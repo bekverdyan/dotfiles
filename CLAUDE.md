@@ -28,7 +28,9 @@ theme) is defined here.
   outside `$HOME`: after changing them in `home.nix`, the user reruns
   `sudo lightdm-setup`.
 - Dell Inspiron 7786. Battery charge limits (`battery` in `home.nix`, Dell
-  allows start 50–95, end 55–100) are applied by `sudo battery-setup`.
+  allows start 50–95, end 55–100; set to 75–80 since it is mostly plugged
+  in) are applied by `sudo battery-setup`; `sudo battery-full` sets 95–100
+  until the next boot.
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,
