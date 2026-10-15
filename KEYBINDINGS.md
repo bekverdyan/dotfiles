@@ -9,7 +9,7 @@ Bindings marked **(custom)** are set in `home.nix`; the rest are the app's defau
 
 | Keys | Action |
 |---|---|
-| `Alt+Shift` | Switch layout: US → Armenian (alt. phonetic: `8` is Ր, `R` is Ռ) → Russian (phonetic) → US; polybar shows `EN` / `HY` / `RU` **(custom)** |
+| `Alt+Shift` | Switch layout: US → Armenian (alt. phonetic: `8` is Ր, `R` is Ռ) → Russian (phonetic) → US; polybar shows its flag 🇺🇸 / 🇦🇲 / 🇷🇺 **(custom)** |
 | `Caps Lock` | Acts as `Esc` **(custom)** |
 
 ## bspwm + sxhkd (window manager)

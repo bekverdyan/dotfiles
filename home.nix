@@ -17,6 +17,60 @@ let
     yellow = "#ebcb8b";
   };
 
+  # Keyboard layout flags for polybar. Polybar can't shape emoji flags (a
+  # pair of regional-indicator letters), so this font maps each Noto Color
+  # Emoji flag to one private-use code point that polybar draws as a glyph.
+  # BMP code points: fontconfig ignores the plane-16 private-use area.
+  layoutFlags = { us = "US"; am = "AM"; ru = "RU"; }; # xkb layout -> country
+  flagCodes = pkgs.lib.imap0 (i: layout: {
+    inherit layout;
+    country = layoutFlags.${layout};
+    code = 57344 + i; # U+E000, U+E001, ...
+  }) (builtins.attrNames layoutFlags);
+  flagChar = code: builtins.fromJSON ''"\u${pkgs.lib.toHexString code}"'';
+  flagFont = pkgs.runCommand "polybar-flags-font" {
+    nativeBuildInputs = [ (pkgs.python3.withPackages (p: [ p.fonttools ])) ];
+    flags = builtins.toJSON (map (f: [ f.code f.country ]) flagCodes);
+    passAsFile = [ "script" ];
+    script = ''
+      import json, os, sys
+      from fontTools.ttLib import TTFont
+      from fontTools import subset
+      f = TTFont(sys.argv[1])
+      cmap = f.getBestCmap()
+      ri = lambda c: cmap[0x1F1E6 + ord(c) - ord("A")]
+      # A flag is the GSUB ligature of its two regional indicators
+      ligs = {}
+      for lookup in f["GSUB"].table.LookupList.Lookup:
+          for st in lookup.SubTable:
+              st = getattr(st, "ExtSubTable", st)
+              for first, ls in getattr(st, "ligatures", {}).items():
+                  for l in ls:
+                      if len(l.Component) == 1:
+                          ligs[(first, l.Component[0])] = l.LigGlyph
+      pua = {code: ligs[(ri(cc[0]), ri(cc[1]))] for code, cc in json.loads(os.environ["flags"])}
+      for t in f["cmap"].tables:
+          if t.isUnicode():
+              t.cmap.update(pua)
+      opts = subset.Options()
+      opts.layout_features = []
+      opts.name_IDs = ["*"]
+      s = subset.Subsetter(opts)
+      s.populate(unicodes=list(pua))
+      s.subset(f)
+      for rec in f["name"].names:
+          if rec.nameID in (1, 4, 16):
+              rec.string = "Polybar Flags"
+          if rec.nameID == 6:
+              rec.string = "PolybarFlags"
+      f.save(sys.argv[2])
+    '';
+  } ''
+    mkdir -p $out/share/fonts/truetype
+    python3 $scriptPath ${pkgs.noto-fonts-color-emoji}/share/fonts/noto/NotoColorEmoji.ttf \
+      $out/share/fonts/truetype/PolybarFlags.ttf
+  '';
+
   # Shared by bash and zsh: `f` runs fff, then cds into the dir it was quit in
   fffCd = ''
     f() {
@@ -152,6 +206,7 @@ in
     gtop # system monitor dashboard
     gotop # system monitor, Nord colors (see the gotop section)
     nerd-fonts.jetbrains-mono
+    flagFont # keyboard layout flags in polybar
     feh # wallpaper
     pavucontrol # volume mixer (click the volume in the bar)
     fff # minimal file manager (`f` cds into the dir you quit in)
@@ -503,7 +558,10 @@ in
         height = 28;
         background = nord.bg;
         foreground = nord.fg;
-        font = [ "JetBrainsMono Nerd Font:size=10;2" ];
+        font = [
+          "JetBrainsMono Nerd Font:size=10;2"
+          "Polybar Flags:scale=10;2" # font 2: layout flags
+        ];
         padding = 1;
         module.margin = 1;
         separator = {
@@ -556,10 +614,11 @@ in
       "module/xkeyboard" = {
         type = "internal/xkeyboard";
         format = "<label-layout>"; # no Caps/Num Lock indicators
-        layout.icon = [ "us;EN" "am;HY" "ru;RU" ];
+        # A flag per layout, drawn with font 2 (flagFont)
+        layout.icon = map (f: "${f.layout};${flagChar f.code}") flagCodes;
         label.layout = {
           text = "%icon%";
-          foreground = nord.accent;
+          font = 2;
         };
       };
 

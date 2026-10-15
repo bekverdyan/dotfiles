@@ -105,7 +105,8 @@ Current custom bindings, in short:
   brightness keys and scroll on polybar's `BRI` via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%).
 - Keyboard: layouts `us,am,ru` (am `phonetic-alt`, ru `phonetic`) cycled with `Alt+Shift`,
-  shown in polybar as `EN`/`HY`/`RU` (xkeyboard module);
+  shown in polybar as flags (xkeyboard module, `flagFont` built from Noto
+  Color Emoji, since polybar can't shape emoji flags);
   `Caps Lock` is `Esc` (`caps:escape`, set via `setxkbmap` in bspwm
   `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;
