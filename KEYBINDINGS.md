@@ -39,7 +39,7 @@ All **(custom)**.
 | `Super+Ctrl+↓` | Rotate screen upside down |
 | `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
 | `Mute` | Mute / unmute |
-| `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (down to 0%, backlight off) |
+| `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (down to 0%, backlight off); the bar's sun flashes yellow / red |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |
@@ -54,7 +54,7 @@ All **(custom)**.
 | Scroll on volume | Volume up / down |
 | Left-click Wi-Fi name | Open the Wi-Fi menu **(custom)** |
 | Left-click Bluetooth (󰂯) | Open the Bluetooth menu **(custom)** |
-| Scroll on brightness (󰖨) | Screen brightness up / down by 5% **(custom)** |
+| Scroll on brightness (󰖨) | Screen brightness up / down by 5%, sun flashes yellow / red **(custom)** |
 
 ## Wi-Fi menu (networkmanager_dmenu, `Super+N`)
 

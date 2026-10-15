@@ -132,6 +132,30 @@ let
   # (backlight off; brightness up brings it back).
   setBrightness = "${pkgs.brightnessctl}/bin/brightnessctl -q -d intel_backlight -n0 set";
 
+  # Polybar brightness label: a sun (outline below 50%, filled from 50%) in
+  # the given color, and the percentage
+  brightnessLabel = color: pkgs.writeShellScript "polybar-brightness" ''
+    pct=$(${pkgs.brightnessctl}/bin/brightnessctl -d intel_backlight -m | cut -d, -f4)
+    pct=''${pct%\%}
+    sun=(${pkgs.lib.escapeShellArgs icons.brightness})
+    echo "${barIcon color "\${sun[pct >= 50]}"} $pct%"
+  '';
+  # Brightness keys and scrolling on the bar: change the brightness, then
+  # flash the polybar icon yellow (up) or red (down) for a second over IPC
+  brightnessStep = pkgs.writeShellScript "brightness-step" ''
+    msg=${config.services.polybar.package}/bin/polybar-msg
+    flash=''${XDG_RUNTIME_DIR:-/tmp}/brightness-flash
+    case $1 in
+      up) ${setBrightness} 5%+; hook=1 ;;
+      down) ${setBrightness} 5%-; hook=2 ;;
+      *) echo "usage: brightness-step up|down" >&2; exit 1 ;;
+    esac
+    $msg action backlight hook $hook >/dev/null
+    # Back to normal after a second, unless another press came since
+    echo $$ > "$flash"
+    ( sleep 1; [ "$(cat "$flash")" = $$ ] && $msg action backlight hook 0 >/dev/null ) &
+  '';
+
   # LightDM login screen (slick-greeter) in Nord. The greeter runs as the
   # `lightdm` user and can't see the Nix profile, so `sudo lightdm-setup`
   # copies the theme, cursor, font, wallpaper and config into the system.
@@ -637,7 +661,7 @@ in
         "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%{+,-}";
       "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       # Laptop brightness keys
-      "XF86MonBrightness{Up,Down}" = "${setBrightness} 5%{+,-}";
+      "XF86MonBrightness{Up,Down}" = "${brightnessStep} {up,down}";
     };
   };
 
@@ -676,6 +700,7 @@ in
         width = "100%";
         height = 28;
         bottom = true; # at the bottom of the screen
+        enable-ipc = true; # polybar-msg, used by brightnessStep
         background = nord.bg;
         foreground = nord.fg;
         font = [
@@ -750,20 +775,15 @@ in
         };
       };
 
-      # Polybar's own scrolling writes to the root-only sysfs file, so
-      # scroll actions run brightnessctl instead (A4 up, A5 down)
+      # custom/ipc, so brightnessStep can flash the icon: hook 0 is the normal
+      # label, 1 yellow (brightness up), 2 red (down). It updates only through
+      # those hooks, i.e. the brightness keys and scrolling on it.
       "module/backlight" = {
-        type = "internal/backlight";
-        card = "intel_backlight";
-        use-actual-brightness = true;
-        enable-scroll = false;
-        format = "%{A4:${setBrightness} 5%+:}%{A5:${setBrightness} 5%-:}<ramp> <label>%{A}%{A}";
-        label = "%percentage%%";
-        ramp = {
-          text = icons.brightness;
-          foreground = nord.accent;
-          font = 3;
-        };
+        type = "custom/ipc";
+        hook = map (color: "${brightnessLabel color}") [ nord.accent nord.yellow nord.red ];
+        initial = 1; # hook 0 at start
+        scroll.up = "${brightnessStep} up";
+        scroll.down = "${brightnessStep} down";
       };
 
       "module/wifi" = {

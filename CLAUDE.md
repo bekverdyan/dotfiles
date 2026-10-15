@@ -105,7 +105,9 @@ Current custom bindings, in short:
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
   brightness keys and scroll on polybar's brightness via `brightnessctl`
-  (through logind, since the sysfs file is root-only; down to 0%).
+  (through logind, since the sysfs file is root-only; down to 0%), via
+  `brightnessStep`, which flashes the bar's icon yellow (up) / red (down)
+  over polybar IPC.
 - Keyboard: layouts `us,am,ru` (am `phonetic-alt`, ru `phonetic`) cycled with `Alt+Shift`,
   shown in polybar as flags (xkeyboard module, `flagFont` built from Noto
   Color Emoji, since polybar can't shape emoji flags);
