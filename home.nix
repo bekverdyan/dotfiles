@@ -14,8 +14,12 @@ let
     muted = "#4c566a";
     accent = "#88c0d0";
     red = "#bf616a";
+    orange = "#d08770"; # nord12
     yellow = "#ebcb8b";
     green = "#a3be8c";
+    frost1 = "#8fbcbb"; # nord7 (accent is nord8)
+    frost3 = "#81a1c1"; # nord9
+    frost4 = "#5e81ac"; # nord10
     pink = "#b48ead"; # nord15, Aurora purple
   };
 
@@ -51,6 +55,114 @@ let
   };
   # An icon in polybar's icon font (font 3), in the given color
   barIcon = color: glyph: "%{F${color}}%{T3}${glyph}%{T-}%{F-}";
+
+  # cava settings: the default style (programs.cava) and the base of every
+  # preset in the super + v menu
+  cavaSettings = {
+    general = {
+      framerate = 60;
+      bar_width = 2;
+      bar_spacing = 1;
+    };
+    # PipeWire's default output monitor: whatever is playing
+    input = {
+      method = "pipewire";
+      source = "auto";
+    };
+    output.synchronized_sync = 1; # no flicker in Alacritty
+    # Bottom to top: Nord frost blues fading into Nord pink. Hex colors
+    # must be quoted; the background stays the terminal's Nord one.
+    color = {
+      gradient = 1;
+      gradient_color_1 = "'${nord.frost4}'";
+      gradient_color_2 = "'${nord.frost3}'";
+      gradient_color_3 = "'${nord.accent}'";
+      gradient_color_4 = "'${nord.frost1}'";
+      gradient_color_5 = "'${nord.pink}'";
+    };
+  };
+  # Visualizer styles: each is cavaSettings with these changes
+  cavaPresets = [
+    { name = "bars"; about = "mirrored bars, bass in the middle (default)"; set = { }; }
+    { name = "spectrum"; about = "bass on the left, treble on the right"; set.output.channels = "mono"; }
+    { name = "center"; about = "bars up and down from a center line"; set.output.orientation = "horizontal"; }
+    { name = "hanging"; about = "bars hanging from the top"; set.output.orientation = "top"; }
+    { name = "hills"; about = "smooth peaks (Monstercat)"; set.smoothing.monstercat = 1; }
+    { name = "waves"; about = "rolling waves"; set.smoothing = { monstercat = 1; waves = 1; }; }
+    {
+      name = "center-hills";
+      about = "smooth spectrum mirrored around a center line";
+      set = {
+        output = { orientation = "horizontal"; channels = "mono"; };
+        smoothing.monstercat = 1;
+      };
+    }
+    {
+      name = "dense";
+      about = "thin bars, no gaps";
+      set = {
+        general = { bar_width = 1; bar_spacing = 0; };
+        output.channels = "mono";
+      };
+    }
+    { name = "blocks"; about = "wide chunky bars"; set.general = { bar_width = 4; bar_spacing = 1; }; }
+    {
+      name = "labels";
+      about = "spectrum with frequency labels";
+      set.output = { channels = "mono"; xaxis = "frequency"; };
+    }
+    {
+      name = "aurora";
+      about = "Nord Aurora colors: red to purple";
+      set.color = {
+        gradient_color_1 = "'${nord.red}'";
+        gradient_color_2 = "'${nord.orange}'";
+        gradient_color_3 = "'${nord.yellow}'";
+        gradient_color_4 = "'${nord.green}'";
+        gradient_color_5 = "'${nord.pink}'";
+      };
+    }
+    {
+      name = "retro";
+      about = "a few wide bars, like an old hi-fi equalizer";
+      # Wide bars; a fixed count would fail in narrow windows
+      set.general = { bar_width = 6; bar_spacing = 2; };
+    }
+    { name = "calm"; about = "slow, floating movement"; set.smoothing.noise_reduction = 95; }
+    {
+      # cava needs about 43 Hz of range per bar, so few bars keep it bass-only
+      name = "bass";
+      about = "only the low end (30-350 Hz): kick drums and bass";
+      set = {
+        general = {
+          bars = 8;
+          bar_width = 6; # 8 bars x (6 + 2) = 64 columns, fits a half-screen tile
+          bar_spacing = 2;
+          lower_cutoff_freq = 30;
+          higher_cutoff_freq = 350;
+        };
+        output.channels = "mono";
+      };
+    }
+  ];
+  # Presets offered in the super + v menu; the others stay defined (and in
+  # ~/.config/cava/presets) but hidden. Add a name back to show it again.
+  cavaMenuPresets = [ "aurora" "retro" "calm" "bass" ];
+  cavaPresetDir = pkgs.linkFarm "cava-presets" (map (p: {
+    inherit (p) name;
+    path = pkgs.writeText "cava-${p.name}"
+      (pkgs.lib.generators.toINI { } (pkgs.lib.recursiveUpdate cavaSettings p.set));
+  }) cavaPresets);
+  # Super+V / Super+Shift+V: pick a preset in rofi, then open it in a window
+  # of the class given as $1: cava (floating, by a bspwm rule) or cava-tiled
+  cavaMenu = pkgs.writeShellScript "cava-menu" ''
+    choice=$(printf '%s\n' ${pkgs.lib.escapeShellArgs (map (p: "${p.name}: ${p.about}")
+      (builtins.filter (p: builtins.elem p.name cavaMenuPresets) cavaPresets))} \
+      | rofi -dmenu -i -p cava) || exit 0
+    preset=${cavaPresetDir}/''${choice%%:*}
+    [ -f "$preset" ] || exit 1
+    exec alacritty --class "''${1:-cava}" -e cava -p "$preset"
+  '';
 
   # Keyboard layout flags for polybar. Polybar can't shape emoji flags (a
   # pair of regional-indicator letters), so this font maps each Noto Color
@@ -481,6 +593,17 @@ in
     colorscheme=nord
   '';
 
+  # ---------- cava (audio visualizer, super + v) ----------
+  # Super+V / Super+Shift+V: a rofi menu of the presets in the let block,
+  # then the chosen style opens floating / tiled. Plain `cava` in a
+  # terminal uses the default style (the bars preset).
+  programs.cava = {
+    enable = true;
+    settings = cavaSettings;
+  };
+  # For reference; the menu reads the presets from the store
+  xdg.configFile."cava/presets".source = cavaPresetDir;
+
   # ---------- Firefox ----------
   programs.firefox = {
     enable = true;
@@ -621,6 +744,12 @@ in
       };
       rules = {
         "Pavucontrol".state = "floating";
+        # cava window from super + v: floating, centered
+        "cava" = {
+          state = "floating";
+          rectangle = "1200x420+0+0";
+          center = true;
+        };
       };
       startupPrograms = [
         # US, Armenian (phonetic-alt: 8 is Ր, R is Ռ) and Russian (phonetic)
@@ -652,6 +781,8 @@ in
       "super + b" = "firefox";
       "super + n" = "networkmanager_dmenu"; # Wi-Fi menu
       "super + shift + n" = "rofi-bluetooth"; # Bluetooth menu
+      # Audio visualizer: pick a style, then open it floating / tiled
+      "super + {_,shift + }v" = "${cavaMenu} {cava,cava-tiled}";
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings
       "super + alt + {q,r}" = "bspc {quit,wm -r}"; # quit / restart bspwm
       "super + alt + l" = "loginctl lock-session"; # blurlock

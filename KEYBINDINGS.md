@@ -23,6 +23,8 @@ All **(custom)**.
 | `Super+B` | Open Firefox |
 | `Super+N` | Wi-Fi menu (networkmanager_dmenu) |
 | `Super+Shift+N` | Bluetooth menu (rofi-bluetooth) |
+| `Super+V` | Audio visualizer (cava): pick a style, opens floating |
+| `Super+Shift+V` | Audio visualizer (cava): pick a style, opens tiled |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
 | `Super+1` … `Super+0` | Go to desktop 1 … 10 |
@@ -93,6 +95,27 @@ Pick a device in the menu to open its submenu.
 To add a device: put it in pairing mode, turn **Scan** on, pick it, then
 **Pair** and **Trust**. Trusted devices reconnect on their own when they are
 turned on nearby.
+
+## cava (audio visualizer, `Super+V` floating, `Super+Shift+V` tiled)
+
+Shows whatever is playing, in a Nord gradient.
+
+| Keys | Action |
+|---|---|
+| `Up` / `Down` | Sensitivity up / down (taller / shorter bars) |
+| `Left` / `Right` | Bars wider / narrower |
+| `f` / `b` | Cycle foreground / background color |
+| `r` / `c` | Reload the config / only the colors |
+| `q` | Quit |
+
+Both keys first open a rofi menu of styles (`Esc` cancels): `aurora` (Nord
+Aurora colors, red to purple), `retro` (a few wide bars), `calm` (slow,
+floating movement), `bass` (only the low end, 30–350 Hz).
+
+More styles are defined in `home.nix` (`cavaPresets`) but hidden from the
+menu: `bars` (the default for plain `cava`), `spectrum`, `center`, `hanging`,
+`hills`, `waves`, `center-hills`, `dense`, `blocks`, `labels`. Add a name to
+`cavaMenuPresets` to show it again.
 
 ## rofi (app launcher)
 
