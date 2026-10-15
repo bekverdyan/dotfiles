@@ -15,7 +15,42 @@ let
     accent = "#88c0d0";
     red = "#bf616a";
     yellow = "#ebcb8b";
+    green = "#a3be8c";
+    pink = "#b48ead"; # nord15, Aurora purple
   };
+
+  # A character from its code point (Nix strings have no \u escape). Above
+  # U+FFFF it goes through a JSON surrogate pair.
+  char = code:
+    let
+      hex4 = n: pkgs.lib.fixedWidthString 4 "0" (pkgs.lib.toHexString n);
+      c = code - 65536;
+    in builtins.fromJSON (if code < 65536 then ''"\u${hex4 code}"''
+      else ''"\u${hex4 (55296 + c / 1024)}\u${hex4 (56320 + pkgs.lib.mod c 1024)}"'');
+
+  # Polybar icons: Material Design glyphs of the JetBrainsMono Nerd Font, by
+  # code point (look names up at nerdfonts.com/cheat-sheet)
+  md = hex: char (pkgs.lib.fromHexString hex);
+  icons = {
+    # md-weather_sunny (outline) below 50%, md-white_balance_sunny (filled) above
+    brightness = map md [ "f0599" "f05a8" ];
+    volume = map md [ "f057f" "f0580" "f057e" ]; # md-volume_low/medium/high
+    volumeMuted = md "f0581"; # md-volume_off
+    wifi = map md [ "f091f" "f0922" "f0925" "f0928" ]; # md-wifi_strength_1-4
+    wifiOff = md "f092e"; # md-wifi_strength_off_outline: on, not connected
+    wifiDisabled = md "f05aa"; # md-wifi_off: radio turned off
+    bluetooth = md "f00af"; # md-bluetooth
+    bluetoothConnected = md "f00b1"; # md-bluetooth_connect
+    bluetoothOff = md "f00b2"; # md-bluetooth_off
+    # md-battery_10 ... md-battery_90, md-battery (full)
+    battery = map md [ "f007a" "f007b" "f007c" "f007d" "f007e" "f007f" "f0080" "f0081" "f0082" "f0079" ];
+    # md-battery_charging_10 ... md-battery_charging_100
+    batteryCharging = map md [ "f089c" "f0086" "f0087" "f0088" "f089d" "f0089" "f089e" "f008a" "f008b" "f0085" ];
+    batteryAlert = md "f0083"; # md-battery_alert
+    plug = md "f06a5"; # md-power_plug: on the charger, not charging
+  };
+  # An icon in polybar's icon font (font 3), in the given color
+  barIcon = color: glyph: "%{F${color}}%{T3}${glyph}%{T-}%{F-}";
 
   # Keyboard layout flags for polybar. Polybar can't shape emoji flags (a
   # pair of regional-indicator letters), so this font maps each Noto Color
@@ -27,7 +62,6 @@ let
     country = layoutFlags.${layout};
     code = 57344 + i; # U+E000, U+E001, ...
   }) (builtins.attrNames layoutFlags);
-  flagChar = code: builtins.fromJSON ''"\u${pkgs.lib.toHexString code}"'';
   flagFont = pkgs.runCommand "polybar-flags-font" {
     nativeBuildInputs = [ (pkgs.python3.withPackages (p: [ p.fonttools ])) ];
     flags = builtins.toJSON (map (f: [ f.code f.country ]) flagCodes);
@@ -175,29 +209,55 @@ let
     echo Custom > charge_types
     echo "Charge from $(cat charge_control_start_threshold)% to $(cat charge_control_end_threshold)%, mode: $(cat charge_types)"
   '';
-  # Polybar battery label: CHG charging, AC plugged in but not charging (held
-  # by the limits, or full), BAT on battery, LOW in yellow at 10% or less.
+  # Polybar battery label: a level icon on battery, a green charging icon
+  # while charging, a plug when plugged in but not charging (held by the
+  # limits, or full), and a yellow alert at 10% or less.
   # Check the names with: ls /sys/class/power_supply
   batteryStatus = pkgs.writeShellScript "polybar-battery" ''
     bat=/sys/class/power_supply/BAT0
     read -r status < $bat/status
     read -r pct < $bat/capacity
+    level=(${pkgs.lib.escapeShellArgs icons.battery})
+    charging=(${pkgs.lib.escapeShellArgs icons.batteryCharging})
+    i=$(( (pct + 5) / 10 )); (( i < 1 )) && i=1; (( i > 10 )) && i=10
     case $status in
-      Charging) echo "CHG $pct%" ;;
+      Charging) echo "${barIcon nord.green "\${charging[i-1]}"} $pct%" ;;
       Discharging)
-        if [ "$pct" -le 10 ]; then echo "%{F${nord.yellow}}LOW $pct%%{F-}"
-        else echo "BAT $pct%"; fi ;;
-      *) echo "AC $pct%" ;; # "Not charging", "Full"
+        if (( pct <= 10 )); then echo "${barIcon nord.yellow icons.batteryAlert} %{F${nord.yellow}}$pct%%{F-}"
+        else echo "${barIcon nord.accent "\${level[i-1]}"} $pct%"; fi ;;
+      *) echo "${barIcon nord.accent icons.plug} $pct%" ;; # "Not charging", "Full"
     esac
   '';
-  # Polybar Bluetooth label: "BT off" (dimmed), "BT on", or the connected
-  # devices' names. bluetoothctl comes from the bluez host package.
+  # Polybar Bluetooth label: a dimmed crossed-out icon when off, the icon
+  # alone when on, and the connected devices' names after a pink connected
+  # icon.
+  # bluetoothctl comes from the bluez host package.
   bluetoothStatus = pkgs.writeShellScript "polybar-bluetooth" ''
     if ! bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
-      echo "%{F${nord.muted}}BT off%{F-}"; exit
+      echo "${barIcon nord.muted icons.bluetoothOff}"; exit
     fi
     names=$(bluetoothctl devices Connected | cut -d' ' -f3- | cut -c1-20 | paste -sd, -)
-    echo "BT ''${names:-on}"
+    if [ -n "$names" ]; then echo "${barIcon nord.pink icons.bluetoothConnected} $names"
+    else echo "${barIcon nord.accent icons.bluetooth}"; fi
+  '';
+
+  # Polybar Wi-Fi label: signal icon and network name when connected, a red
+  # icon when Wi-Fi is on but not connected, a dimmed one when it is off.
+  # A script, since internal/network can't tell those last two apart.
+  # nmcli comes from the networkmanager host package; --rescan no reads the
+  # last scan instead of starting a new one every few seconds.
+  wifiStatus = pkgs.writeShellScript "polybar-wifi" ''
+    if [ "$(nmcli radio wifi)" != enabled ]; then
+      echo "${barIcon nord.muted icons.wifiDisabled} %{F${nord.muted}}off%{F-}"; exit
+    fi
+    line=$(nmcli -t -f IN-USE,SIGNAL,SSID device wifi list --rescan no | grep -m1 '^\*:')
+    if [ -z "$line" ]; then
+      echo "${barIcon nord.red icons.wifiOff} %{F${nord.red}}offline%{F-}"; exit
+    fi
+    line=''${line#\*:}; signal=''${line%%:*}; ssid=''${line#*:}; ssid=''${ssid//\\:/:}
+    strength=(${pkgs.lib.escapeShellArgs icons.wifi})
+    i=$(( signal / 25 )); (( i > 3 )) && i=3
+    echo "${barIcon nord.accent "\${strength[i]}"} $ssid"
   '';
 
   # BlueZ settings in /etc/bluetooth/main.conf (needs root, so applied by
@@ -614,6 +674,9 @@ in
         font = [
           "JetBrainsMono Nerd Font:size=10;2"
           "Polybar Flags:scale=10;2" # font 2: layout flags
+          # font 3: icons, a bit larger than the text; the Propo variant
+          # gives icons their full width, so they don't touch the text
+          "JetBrainsMono Nerd Font Propo:size=13;3"
         ];
         padding = 1;
         module.margin = 1;
@@ -654,10 +717,15 @@ in
 
       "module/pulseaudio" = {
         type = "internal/pulseaudio";
-        format.volume = "<label-volume>";
-        label.volume = "VOL %percentage%%";
+        format.volume = "<ramp-volume> <label-volume>";
+        label.volume = "%percentage%%";
+        ramp.volume = {
+          text = icons.volume;
+          foreground = nord.accent;
+          font = 3;
+        };
         label.muted = {
-          text = "muted";
+          text = "%{T3}${icons.volumeMuted}%{T-} %percentage%%";
           foreground = nord.muted;
         };
         click.right = "pavucontrol";
@@ -668,7 +736,7 @@ in
         type = "internal/xkeyboard";
         format = "<label-layout>"; # no Caps/Num Lock indicators
         # A flag per layout, drawn with font 2 (flagFont)
-        layout.icon = map (f: "${f.layout};${flagChar f.code}") flagCodes;
+        layout.icon = map (f: "${f.layout};${char f.code}") flagCodes;
         label.layout = {
           text = "%icon%";
           font = 2;
@@ -682,21 +750,20 @@ in
         card = "intel_backlight";
         use-actual-brightness = true;
         enable-scroll = false;
-        format = "%{A4:${setBrightness} 5%+:}%{A5:${setBrightness} 5%-:}<label>%{A}%{A}";
-        label = "BRI %percentage%%";
+        format = "%{A4:${setBrightness} 5%+:}%{A5:${setBrightness} 5%-:}<ramp> <label>%{A}%{A}";
+        label = "%percentage%%";
+        ramp = {
+          text = icons.brightness;
+          foreground = nord.accent;
+          font = 3;
+        };
       };
 
       "module/wifi" = {
-        type = "internal/network";
-        interface.type = "wireless";
-        label.connected = "%essid%";
-        label.disconnected = {
-          text = "offline";
-          foreground = nord.muted;
-        };
-        # Wrap the label in a click action that opens the Wi-Fi menu
-        format.connected = "%{A1:networkmanager_dmenu &:}<label-connected>%{A}";
-        format.disconnected = "%{A1:networkmanager_dmenu &:}<label-disconnected>%{A}";
+        type = "custom/script";
+        exec = wifiStatus;
+        interval = 5;
+        click.left = "networkmanager_dmenu &";
       };
 
       "module/bluetooth" = {

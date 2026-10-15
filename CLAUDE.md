@@ -100,11 +100,11 @@ commit**, marking user-set bindings **(custom)**.
 Current custom bindings, in short:
 - sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `N` Wi-Fi
   menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `Shift+N`
-  Bluetooth menu (rofi-bluetooth, also a click on `BT`), `H/J/K/L`
+  Bluetooth menu (rofi-bluetooth, also a click on its icon), `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
-  brightness keys and scroll on polybar's `BRI` via `brightnessctl`
+  brightness keys and scroll on polybar's brightness via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%).
 - Keyboard: layouts `us,am,ru` (am `phonetic-alt`, ru `phonetic`) cycled with `Alt+Shift`,
   shown in polybar as flags (xkeyboard module, `flagFont` built from Noto

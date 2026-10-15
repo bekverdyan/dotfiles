@@ -53,13 +53,17 @@ All **(custom)**.
 | Left-click volume | Mute / unmute |
 | Scroll on volume | Volume up / down |
 | Left-click Wi-Fi name | Open the Wi-Fi menu **(custom)** |
-| Left-click Bluetooth (`BT`) | Open the Bluetooth menu **(custom)** |
-| Scroll on brightness (`BRI`) | Screen brightness up / down by 5% **(custom)** |
+| Left-click Bluetooth (󰂯) | Open the Bluetooth menu **(custom)** |
+| Scroll on brightness (󰖨) | Screen brightness up / down by 5% **(custom)** |
 
 ## Wi-Fi menu (networkmanager_dmenu, `Super+N`)
 
 Runs in rofi, so rofi's keys apply: type to filter, `Enter` to pick, `Esc`
 to close. The active network is highlighted.
+
+Also opens with a click on Wi-Fi in polybar: the signal icon and network
+name when connected, a red 󰤮 `offline` when Wi-Fi is on but not connected,
+and a dimmed 󰖪 `off` when Wi-Fi is turned off.
 
 | Entry | Action |
 |---|---|
@@ -74,8 +78,9 @@ to close. The active network is highlighted.
 
 ## Bluetooth menu (rofi-bluetooth, `Super+Shift+N`)
 
-Also opens with a click on `BT` in polybar, which shows `BT off`, `BT on`,
-or the connected device names. Pick a device to open its submenu.
+Also opens with a click on the Bluetooth icon in polybar: dimmed 󰂲 when off,
+󰂯 when on, and a pink 󰂱 with the device names when connected.
+Pick a device in the menu to open its submenu.
 
 | Entry | Action |
 |---|---|
