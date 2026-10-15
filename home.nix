@@ -190,6 +190,37 @@ let
       *) echo "AC $pct%" ;; # "Not charging", "Full"
     esac
   '';
+  # Polybar Bluetooth label: "BT off" (dimmed), "BT on", or the connected
+  # devices' names. bluetoothctl comes from the bluez host package.
+  bluetoothStatus = pkgs.writeShellScript "polybar-bluetooth" ''
+    if ! bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
+      echo "%{F${nord.muted}}BT off%{F-}"; exit
+    fi
+    names=$(bluetoothctl devices Connected | cut -d' ' -f3- | cut -c1-20 | paste -sd, -)
+    echo "BT ''${names:-on}"
+  '';
+
+  # BlueZ settings in /etc/bluetooth/main.conf (needs root, so applied by
+  # `sudo bluetooth-setup`). Experimental enables the battery level of
+  # headphones and the like; AutoEnable powers the adapter at boot.
+  bluetoothConf = pkgs.writeText "bluetooth-main.conf" ''
+    [General]
+    Experimental = true
+
+    [Policy]
+    AutoEnable = true
+  '';
+  bluetoothSetup = pkgs.writeShellScriptBin "bluetooth-setup" ''
+    set -eu
+    [ "$(id -u)" = 0 ] || { echo "run it with sudo" >&2; exit 1; }
+    conf=/etc/bluetooth/main.conf
+    # Keep the packaged file once, for reference
+    [ -e $conf.orig ] || cp $conf $conf.orig
+    install -m644 ${bluetoothConf} $conf
+    systemctl restart bluetooth
+    echo "Bluetooth configured (original kept as $conf.orig)"
+  '';
+
   # Charging only begins below the start, so lift both (the highest Dell
   # allows) to charge now, even from 76-80%
   batteryFull = pkgs.writeShellScriptBin "battery-full" ''
@@ -227,6 +258,8 @@ in
     fff # minimal file manager (`f` cds into the dir you quit in)
     blurlock # lock the screen (also Super+Alt+L)
     networkmanager_dmenu # Wi-Fi menu in rofi (Super+N, or click Wi-Fi in the bar)
+    rofi-bluetooth # Bluetooth menu in rofi (Super+Shift+N, or click BT in the bar)
+    bluetoothSetup # `sudo bluetooth-setup` writes /etc/bluetooth/main.conf
     lightdmSetup # `sudo lightdm-setup` installs the login screen
     batterySetup # `sudo battery-setup` sets the battery charge limits
     batteryFull # `sudo battery-full` charges to 100% once, e.g. before a trip
@@ -363,6 +396,7 @@ in
     # Full store paths: sudo doesn't search the Nix profile
     battery-setup = "sudo ${batterySetup}/bin/battery-setup";
     battery-full = "sudo ${batteryFull}/bin/battery-full";
+    bluetooth-setup = "sudo ${bluetoothSetup}/bin/bluetooth-setup";
   };
 
   programs.bash = {
@@ -519,6 +553,7 @@ in
       "super + space" = "rofi -show drun";
       "super + b" = "firefox";
       "super + n" = "networkmanager_dmenu"; # Wi-Fi menu
+      "super + shift + n" = "rofi-bluetooth"; # Bluetooth menu
       "super + Escape" = "pkill -USR1 -x sxhkd"; # reload keybindings
       "super + alt + {q,r}" = "bspc {quit,wm -r}"; # quit / restart bspwm
       "super + alt + l" = "loginctl lock-session"; # blurlock
@@ -588,7 +623,7 @@ in
         };
         modules.left = "bspwm";
         modules.center = "title";
-        modules.right = "xkeyboard backlight pulseaudio wifi battery date";
+        modules.right = "xkeyboard backlight pulseaudio wifi bluetooth battery date";
         wm-restack = "bspwm";
       };
 
@@ -662,6 +697,13 @@ in
         # Wrap the label in a click action that opens the Wi-Fi menu
         format.connected = "%{A1:networkmanager_dmenu &:}<label-connected>%{A}";
         format.disconnected = "%{A1:networkmanager_dmenu &:}<label-disconnected>%{A}";
+      };
+
+      "module/bluetooth" = {
+        type = "custom/script";
+        exec = bluetoothStatus;
+        interval = 5;
+        click.left = "rofi-bluetooth &";
       };
 
       # A script, since internal/battery shows "Not charging" (plugged in,

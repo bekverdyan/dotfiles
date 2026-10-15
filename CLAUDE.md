@@ -99,7 +99,8 @@ commit**, marking user-set bindings **(custom)**.
 
 Current custom bindings, in short:
 - sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `N` Wi-Fi
-  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `H/J/K/L`
+  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `Shift+N`
+  Bluetooth menu (rofi-bluetooth, also a click on `BT`), `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);

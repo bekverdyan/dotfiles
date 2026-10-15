@@ -132,6 +132,14 @@ sudo systemctl enable --now NetworkManager bluetooth power-profiles-daemon
 
 Connect to Wi-Fi from a TTY with `nmtui`.
 
+Then write the BlueZ settings (battery level of headphones, adapter on at
+boot) to `/etc/bluetooth/main.conf`; the packaged file is kept as
+`main.conf.orig`:
+
+```sh
+bluetooth-setup   # alias for: sudo "$(command -v bluetooth-setup)"
+```
+
 ## 8. Battery charge limits
 
 No package needed: the `dell_laptop` kernel driver controls charging. The

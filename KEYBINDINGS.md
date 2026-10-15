@@ -22,6 +22,7 @@ All **(custom)**.
 | `Super+Space` | App launcher (rofi) |
 | `Super+B` | Open Firefox |
 | `Super+N` | Wi-Fi menu (networkmanager_dmenu) |
+| `Super+Shift+N` | Bluetooth menu (rofi-bluetooth) |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
 | `Super+1` … `Super+0` | Go to desktop 1 … 10 |
@@ -52,6 +53,7 @@ All **(custom)**.
 | Left-click volume | Mute / unmute |
 | Scroll on volume | Volume up / down |
 | Left-click Wi-Fi name | Open the Wi-Fi menu **(custom)** |
+| Left-click Bluetooth (`BT`) | Open the Bluetooth menu **(custom)** |
 | Scroll on brightness (`BRI`) | Screen brightness up / down by 5% **(custom)** |
 
 ## Wi-Fi menu (networkmanager_dmenu, `Super+N`)
@@ -69,6 +71,22 @@ to close. The active network is highlighted.
 | Delete a Connection | Forget a saved network |
 | Show WiFi password | Show the current network's password and QR code |
 | Launch Connection Manager | Open `nmtui` in Alacritty (edit connections, VPNs) **(custom)** |
+
+## Bluetooth menu (rofi-bluetooth, `Super+Shift+N`)
+
+Also opens with a click on `BT` in polybar, which shows `BT off`, `BT on`,
+or the connected device names. Pick a device to open its submenu.
+
+| Entry | Action |
+|---|---|
+| A device name | Open its submenu: Connect/Disconnect, Pair, Trust |
+| Power: on / off | Turn the Bluetooth adapter on / off |
+| Scan: on / off | Search for new devices (about 5 seconds) |
+| Pairable / Discoverable | Let other devices pair with / find the laptop |
+
+To add a device: put it in pairing mode, turn **Scan** on, pick it, then
+**Pair** and **Trust**. Trusted devices reconnect on their own when they are
+turned on nearby.
 
 ## rofi (app launcher)
 
