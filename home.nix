@@ -153,12 +153,58 @@ let
     path = pkgs.writeText "cava-${p.name}"
       (pkgs.lib.generators.toINI { } (pkgs.lib.recursiveUpdate cavaSettings p.set));
   }) cavaPresets);
-  # Super+V / Super+Shift+V: pick a preset in rofi, then open it in a window
-  # of the class given as $1: cava (floating, by a bspwm rule) or cava-tiled
+  # MilkDrop, Winamp's visualizer, through projectM: the projectM team's
+  # curated preset pack (~9,800 presets) and the textures many of them use
+  milkdropPresets = pkgs.fetchFromGitHub {
+    owner = "projectM-visualizer";
+    repo = "presets-cream-of-the-crop";
+    rev = "0180df21f5e0bd39b9060cc5de420ed2f1f9e509";
+    hash = "sha256-4ZyrXmiLR8hyzad9qPjOiDaVEEpPDR+nBr2uTrbRxLw=";
+  };
+  milkdropTextures = pkgs.fetchFromGitHub {
+    owner = "projectM-visualizer";
+    repo = "presets-milkdrop-texture-pack";
+    rev = "6368812f27bc747b517218fbf89d21d59afce4d9";
+    hash = "sha256-wanqBRiJd/I1niuryj5WjQjSmRymZNs8r4TMBsym3BM=";
+  };
+  # projectMSDL's settings: its packaged defaults (a new preset every 30 s,
+  # shuffled, 3 s blends, preset name in the title) with the packs above.
+  # Without this file it never changes presets.
+  milkdropSettings = pkgs.runCommand "projectMSDL.properties" { } ''
+    sed -e 's|^projectM.presetPath = .*|projectM.presetPath = ${milkdropPresets}|' \
+        -e 's|^projectM.texturePath = .*|projectM.texturePath = ${milkdropTextures}/textures|' \
+        ${pkgs.projectm-sdl-cpp}/share/projectMSDL/projectMSDL.properties > $out
+  '';
+  # `milkdrop`: projectM on whatever is playing. SDL hides "monitor" sources
+  # and would record a microphone instead (which also drops Bluetooth
+  # headphones into low-quality headset mode), so show monitors and pick
+  # the default output's one by name. pactl comes from the libpulse host
+  # package.
+  milkdrop = pkgs.writeShellScriptBin "milkdrop" ''
+    sink=$(pactl get-default-sink)
+    desc=$(pactl list sinks | awk -v s="$sink" '
+      $1 == "Name:" { n = $2 }
+      $1 == "Description:" && n == s { sub(/^[ \t]*Description: /, ""); print; exit }')
+    [ -n "$desc" ] || { echo "milkdrop: no default audio output" >&2; exit 1; }
+    SDL_AUDIO_DRIVER=pulseaudio SDL_AUDIO_INCLUDE_MONITORS=1 \
+      exec ${pkgs.projectm-sdl-cpp}/bin/projectMSDL -d "Monitor of $desc" "$@"
+  '';
+
+  # Super+V / Super+Shift+V: pick a preset (or MilkDrop) in rofi, then open
+  # it floating or tiled. $1 is the window class for cava: cava (floating,
+  # by a bspwm rule) or cava-tiled. projectMSDL can't set its class, so it
+  # gets a one-shot floating rule instead.
   cavaMenu = pkgs.writeShellScript "cava-menu" ''
     choice=$(printf '%s\n' ${pkgs.lib.escapeShellArgs (map (p: "${p.name}: ${p.about}")
       (builtins.filter (p: builtins.elem p.name cavaMenuPresets) cavaPresets))} \
+      'milkdrop: Winamp MilkDrop visuals (projectM)' \
       | rofi -dmenu -i -p cava) || exit 0
+    if [ "''${choice%%:*}" = milkdrop ]; then
+      [ "$1" = cava-tiled ] ||
+        ${config.xsession.windowManager.bspwm.package}/bin/bspc rule -a projectMSDL -o \
+          state=floating center=on rectangle=1200x675+0+0
+      exec ${milkdrop}/bin/milkdrop
+    fi
     preset=${cavaPresetDir}/''${choice%%:*}
     [ -f "$preset" ] || exit 1
     exec alacritty --class "''${1:-cava}" -e cava -p "$preset"
@@ -469,6 +515,7 @@ in
     blurlock # lock the screen (also Super+Alt+L)
     networkmanager_dmenu # Wi-Fi menu in rofi (Super+N, or click Wi-Fi in the bar)
     rofi-bluetooth # Bluetooth menu in rofi (Super+Shift+N, or click BT in the bar)
+    milkdrop # MilkDrop visualizer (projectM) on what is playing; also in Super+V
     bluetoothSetup # `sudo bluetooth-setup` writes /etc/bluetooth/main.conf
     lightdmSetup # `sudo lightdm-setup` installs the login screen
     batterySetup # `sudo battery-setup` sets the battery charge limits
@@ -603,6 +650,10 @@ in
   };
   # For reference; the menu reads the presets from the store
   xdg.configFile."cava/presets".source = cavaPresetDir;
+
+  # MilkDrop (projectM): the last entry of the super + v menu, and the
+  # `milkdrop` command (in home.packages)
+  xdg.configFile."projectM/projectMSDL.properties".source = milkdropSettings;
 
   # ---------- Firefox ----------
   programs.firefox = {

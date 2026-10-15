@@ -23,8 +23,8 @@ All **(custom)**.
 | `Super+B` | Open Firefox |
 | `Super+N` | Wi-Fi menu (networkmanager_dmenu) |
 | `Super+Shift+N` | Bluetooth menu (rofi-bluetooth) |
-| `Super+V` | Audio visualizer (cava): pick a style, opens floating |
-| `Super+Shift+V` | Audio visualizer (cava): pick a style, opens tiled |
+| `Super+V` | Audio visualizer: pick a cava style or MilkDrop, opens floating |
+| `Super+Shift+V` | Audio visualizer: pick a cava style or MilkDrop, opens tiled |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
 | `Super+1` … `Super+0` | Go to desktop 1 … 10 |
@@ -110,12 +110,34 @@ Shows whatever is playing, in a Nord gradient.
 
 Both keys first open a rofi menu of styles (`Esc` cancels): `aurora` (Nord
 Aurora colors, red to purple), `retro` (a few wide bars), `calm` (slow,
-floating movement), `bass` (only the low end, 30–350 Hz).
+floating movement), `bass` (only the low end, 30–350 Hz), and `milkdrop`
+(Winamp's MilkDrop visuals, see the next section).
 
 More styles are defined in `home.nix` (`cavaPresets`) but hidden from the
 menu: `bars` (the default for plain `cava`), `spectrum`, `center`, `hanging`,
 `hills`, `waves`, `center-hills`, `dense`, `blocks`, `labels`. Add a name to
 `cavaMenuPresets` to show it again.
+
+## MilkDrop (projectM, `milkdrop` in the `Super+V` menu)
+
+Winamp's MilkDrop visualizer through projectM, with the projectM team's
+"Cream of the Crop" pack (~9,800 presets). It shows what is playing on the
+current output (headphones or speakers); a new preset blends in every 30
+seconds, in random order, and the window title shows its name. Also runs as
+the `milkdrop` command.
+
+| Keys | Action |
+|---|---|
+| `n` / `p` | Next / previous preset |
+| `r` | Random preset |
+| `Backspace` | Back to the last shown preset |
+| `Space` | Lock the current preset (stop changing) / unlock |
+| `y` | Shuffle on / off |
+| `Up` / `Down` | Beat sensitivity up / down |
+| Scroll up / down | Next / previous preset |
+| `Ctrl+F` | Fullscreen on / off |
+| `Ctrl+Q` | Quit |
+| `Esc` | Settings panel |
 
 ## rofi (app launcher)
 
