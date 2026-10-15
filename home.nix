@@ -675,6 +675,7 @@ in
       "bar/main" = {
         width = "100%";
         height = 28;
+        bottom = true; # at the bottom of the screen
         background = nord.bg;
         foreground = nord.fg;
         font = [
