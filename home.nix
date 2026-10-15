@@ -325,6 +325,7 @@ in
     terminal = "tmux-256color";
     prefix = "C-Space";
     escapeTime = 0; # no lag after Esc in vim
+    focusEvents = true; # pass focus in/out to apps (vim autoread, Claude Code)
     mouse = true;
     plugins = [ pkgs.tmuxPlugins.nord ];
     extraConfig = ''
