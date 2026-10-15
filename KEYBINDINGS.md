@@ -79,7 +79,8 @@ and a dimmed 󰖪 `off` when Wi-Fi is turned off.
 ## Bluetooth menu (rofi-bluetooth, `Super+Shift+N`)
 
 Also opens with a click on the Bluetooth icon in polybar: dimmed 󰂲 when off,
-󰂯 when on, and a pink 󰂱 with the device names when connected.
+󰂯 when on, and a pink 󰂱 with the device names when connected, each with its
+battery level if the device reports one (yellow at 20% or less).
 Pick a device in the menu to open its submenu.
 
 | Entry | Action |

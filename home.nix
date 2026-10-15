@@ -260,14 +260,22 @@ let
   '';
   # Polybar Bluetooth label: a dimmed crossed-out icon when off, the icon
   # alone when on, and the connected devices' names after a pink connected
-  # icon.
+  # icon, each with its battery level if it reports one (yellow at 20% or
+  # less). Battery levels need BlueZ's Experimental option (bluetooth-setup).
   # bluetoothctl comes from the bluez host package.
   bluetoothStatus = pkgs.writeShellScript "polybar-bluetooth" ''
     if ! bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
       echo "${barIcon nord.muted icons.bluetoothOff}"; exit
     fi
-    names=$(bluetoothctl devices Connected | cut -d' ' -f3- | cut -c1-20 | paste -sd, -)
-    if [ -n "$names" ]; then echo "${barIcon nord.pink icons.bluetoothConnected} $names"
+    out=
+    while read -r _ mac name; do
+      # "Battery Percentage: 0x50 (80)" -> 80
+      bat=$(bluetoothctl info "$mac" | sed -n 's/.*Battery Percentage: .*(\([0-9]*\)).*/\1/p')
+      if [ -n "$bat" ] && (( bat <= 20 )); then bat="%{F${nord.yellow}}$bat%%{F-}"
+      elif [ -n "$bat" ]; then bat="$bat%"; fi
+      out+="''${out:+, }''${name:0:20}''${bat:+ $bat}"
+    done < <(bluetoothctl devices Connected)
+    if [ -n "$out" ]; then echo "${barIcon nord.pink icons.bluetoothConnected} $out"
     else echo "${barIcon nord.accent icons.bluetooth}"; fi
   '';
 
