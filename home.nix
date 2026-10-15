@@ -211,12 +211,16 @@ let
   '';
   # Polybar battery label: a level icon on battery, a green charging icon
   # while charging, a plug when plugged in but not charging (held by the
-  # limits, or full), and a yellow alert at 10% or less.
+  # limits, or full), and a yellow alert at 10% or less. Above the stop
+  # limit on the charger (after battery-full), a yellow plug says "unplug":
+  # the firmware can't discharge, only using the battery brings it down.
+  # The limit is read from the firmware, so battery-full's 100 shows no hint.
   # Check the names with: ls /sys/class/power_supply
   batteryStatus = pkgs.writeShellScript "polybar-battery" ''
     bat=/sys/class/power_supply/BAT0
     read -r status < $bat/status
     read -r pct < $bat/capacity
+    read -r stop < $bat/charge_control_end_threshold
     level=(${pkgs.lib.escapeShellArgs icons.battery})
     charging=(${pkgs.lib.escapeShellArgs icons.batteryCharging})
     i=$(( (pct + 5) / 10 )); (( i < 1 )) && i=1; (( i > 10 )) && i=10
@@ -225,7 +229,9 @@ let
       Discharging)
         if (( pct <= 10 )); then echo "${barIcon nord.yellow icons.batteryAlert} %{F${nord.yellow}}$pct%%{F-}"
         else echo "${barIcon nord.accent "\${level[i-1]}"} $pct%"; fi ;;
-      *) echo "${barIcon nord.accent icons.plug} $pct%" ;; # "Not charging", "Full"
+      *) # "Not charging", "Full"
+        if (( pct > stop )); then echo "${barIcon nord.yellow icons.plug} %{F${nord.yellow}}$pct% unplug%{F-}"
+        else echo "${barIcon nord.accent icons.plug} $pct%"; fi ;;
     esac
   '';
   # Polybar Bluetooth label: a dimmed crossed-out icon when off, the icon

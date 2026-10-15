@@ -158,7 +158,9 @@ Dell firmware only allows a start of 50–95% and a stop of 55–100%, at least
 To charge to 100% once, e.g. before a trip, run
 `battery-full` (a shell alias that runs it with sudo), which sets the limits
 to 95–100%. It lasts until the next boot, or until `battery-setup` is run
-again.
+again. Back on the normal limits, the bar shows a yellow `unplug` while the
+battery is above the stop limit: the firmware can't discharge it, so unplug
+until it is back under 80%.
 
 ## Optional: zsh as the login shell
 
