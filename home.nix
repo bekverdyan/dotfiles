@@ -855,6 +855,11 @@ in
     };
   };
 
+  # Reload the running sxhkd when switch changes its bindings (also when a
+  # script a binding runs moves to a new store path); otherwise it keeps
+  # running the old commands until the next login
+  xdg.configFile."sxhkd/sxhkdrc".onChange = "${pkgs.procps}/bin/pkill -USR1 -x sxhkd || true";
+
   # ---------- Wi-Fi menu (super + n, or click Wi-Fi in the bar) ----------
   # networkmanager_dmenu: pick, connect to and manage networks in rofi.
   # `%%` is a literal `%` (Python ConfigParser).

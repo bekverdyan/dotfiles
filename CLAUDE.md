@@ -63,6 +63,8 @@ rm -f result                                  # build leaves this link
   (`bash -ic '...'`, `zsh -ic '...'`, or `script -qec '...' /dev/null`
   when a TTY is needed), inspect generated files under `~/.config`, or start
   a throwaway tmux server (`tmux -L test ...`, then `kill-server`).
+- `switch` reloads sxhkd by itself when its bindings change (an `onChange`
+  hook on `sxhkdrc`); no manual `pkill -USR1 -x sxhkd` needed.
 - The X display is `:0`; settings such as `setxkbmap` can be applied live
   with `DISPLAY=:0`.
 
