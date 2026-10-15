@@ -398,9 +398,9 @@ in
         "Pavucontrol".state = "floating";
       };
       startupPrograms = [
-        # US, Armenian and Russian (phonetic) layouts, cycled with Alt+Shift;
-        # Caps Lock acts as Esc
-        "${pkgs.setxkbmap}/bin/setxkbmap -layout us,am,ru -variant ,,phonetic -option grp:alt_shift_toggle,caps:escape"
+        # US, Armenian (phonetic-alt: 8 is Ր, R is Ռ) and Russian (phonetic)
+        # layouts, cycled with Alt+Shift; Caps Lock acts as Esc
+        "${pkgs.setxkbmap}/bin/setxkbmap -layout us,am,ru -variant ,phonetic-alt,phonetic -option grp:alt_shift_toggle,caps:escape"
         "${pkgs.feh}/bin/feh --no-fehbg --bg-fill ${wallpaper}"
         # Restart the bar once bspwm runs, so the desktop list connects
         "systemctl --user restart polybar"
