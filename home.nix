@@ -175,6 +175,21 @@ let
     echo Custom > charge_types
     echo "Charge from $(cat charge_control_start_threshold)% to $(cat charge_control_end_threshold)%, mode: $(cat charge_types)"
   '';
+  # Polybar battery label: CHG charging, AC plugged in but not charging (held
+  # by the limits, or full), BAT on battery, LOW in yellow at 10% or less.
+  # Check the names with: ls /sys/class/power_supply
+  batteryStatus = pkgs.writeShellScript "polybar-battery" ''
+    bat=/sys/class/power_supply/BAT0
+    read -r status < $bat/status
+    read -r pct < $bat/capacity
+    case $status in
+      Charging) echo "CHG $pct%" ;;
+      Discharging)
+        if [ "$pct" -le 10 ]; then echo "%{F${nord.yellow}}LOW $pct%%{F-}"
+        else echo "BAT $pct%"; fi ;;
+      *) echo "AC $pct%" ;; # "Not charging", "Full"
+    esac
+  '';
   # Charging only begins below the start, so lift both (the highest Dell
   # allows) to charge now, even from 76-80%
   batteryFull = pkgs.writeShellScriptBin "battery-full" ''
@@ -646,19 +661,12 @@ in
         format.disconnected = "%{A1:networkmanager_dmenu &:}<label-disconnected>%{A}";
       };
 
-      # Check the names with: ls /sys/class/power_supply
+      # A script, since internal/battery shows "Not charging" (plugged in,
+      # held by the charge limits) as discharging
       "module/battery" = {
-        type = "internal/battery";
-        battery = "BAT0";
-        adapter = "AC";
-        full.at = 99;
-        label.charging = "CHG %percentage%%";
-        label.discharging = "BAT %percentage%%";
-        label.full = "BAT %percentage%%";
-        label.low = {
-          text = "LOW %percentage%%";
-          foreground = nord.yellow;
-        };
+        type = "custom/script";
+        exec = batteryStatus;
+        interval = 5;
       };
 
       "module/date" = {
