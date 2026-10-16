@@ -3,17 +3,21 @@
 { config, lib, pkgs, ... }:
 let
   inherit (import ../../lib { inherit lib; }) nord icons barIcon;
+  # The Nix clients, so the scripts don't depend on the host's PATH; they
+  # talk to the host's NetworkManager and bluetoothd over D-Bus
+  nmcli = "${pkgs.networkmanager}/bin/nmcli";
+  bluetoothctl = "${pkgs.bluez}/bin/bluetoothctl";
 
   # Polybar Wi-Fi label: signal icon and network name when connected, a red
   # icon when Wi-Fi is on but not connected, a dimmed one when it is off.
   # A script, since internal/network can't tell those last two apart.
-  # nmcli comes from the networkmanager host package; --rescan no reads the
-  # last scan instead of starting a new one every few seconds.
+  # --rescan no reads the last scan instead of starting a new one every few
+  # seconds.
   wifiStatus = pkgs.writeShellScript "polybar-wifi" ''
-    if [ "$(nmcli radio wifi)" != enabled ]; then
+    if [ "$(${nmcli} radio wifi)" != enabled ]; then
       echo "${barIcon nord.muted icons.wifiDisabled} %{F${nord.muted}}off%{F-}"; exit
     fi
-    line=$(nmcli -t -f IN-USE,SIGNAL,SSID device wifi list --rescan no | grep -m1 '^\*:')
+    line=$(${nmcli} -t -f IN-USE,SIGNAL,SSID device wifi list --rescan no | grep -m1 '^\*:')
     if [ -z "$line" ]; then
       echo "${barIcon nord.red icons.wifiOff} %{F${nord.red}}offline%{F-}"; exit
     fi
@@ -27,19 +31,18 @@ let
   # alone when on, and the connected devices' names after a pink connected
   # icon, each with its battery level if it reports one (yellow at 20% or
   # less). Battery levels need BlueZ's Experimental option (bluetooth-setup).
-  # bluetoothctl comes from the bluez host package.
   bluetoothStatus = pkgs.writeShellScript "polybar-bluetooth" ''
-    if ! bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
+    if ! ${bluetoothctl} show 2>/dev/null | grep -q 'Powered: yes'; then
       echo "${barIcon nord.muted icons.bluetoothOff}"; exit
     fi
     out=
     while read -r _ mac name; do
       # "Battery Percentage: 0x50 (80)" -> 80
-      bat=$(bluetoothctl info "$mac" | sed -n 's/.*Battery Percentage: .*(\([0-9]*\)).*/\1/p')
+      bat=$(${bluetoothctl} info "$mac" | sed -n 's/.*Battery Percentage: .*(\([0-9]*\)).*/\1/p')
       if [ -n "$bat" ] && (( bat <= 20 )); then bat="%{F${nord.yellow}}$bat%%{F-}"
       elif [ -n "$bat" ]; then bat="$bat%"; fi
       out+="''${out:+, }''${name:0:20}''${bat:+ $bat}"
-    done < <(bluetoothctl devices Connected)
+    done < <(${bluetoothctl} devices Connected)
     if [ -n "$out" ]; then echo "${barIcon nord.pink icons.bluetoothConnected} $out"
     else echo "${barIcon nord.accent icons.bluetooth}"; fi
   '';
@@ -93,7 +96,7 @@ in
       [dmenu_passphrase]
       # Hides the password as you type (rofi -password)
       obscure = True
-      show_pass = alacritty --hold -e nmcli device wifi show-password
+      show_pass = alacritty --hold -e ${nmcli} device wifi show-password
 
       [editor]
       # "Launch Connection Manager" opens nmtui in Alacritty

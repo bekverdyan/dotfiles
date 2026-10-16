@@ -113,7 +113,7 @@ sudo pacman -S pipewire pipewire-pulse pipewire-alsa pipewire-jack \
 | `pipewire-pulse` | PulseAudio API, used by the polybar volume module and pavucontrol |
 | `pipewire-alsa`, `pipewire-jack` | route ALSA and JACK apps through PipeWire |
 | `gst-plugin-pipewire` | GStreamer apps (browsers, players) through PipeWire |
-| `libpulse` | PulseAudio client library and `pactl` (also used by `milkdrop`) |
+| `libpulse` | PulseAudio client library and `pactl` |
 
 The user services are socket-activated, so nothing needs enabling. To check:
 `systemctl --user status pipewire wireplumber`.

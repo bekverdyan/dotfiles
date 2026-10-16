@@ -114,6 +114,10 @@ rm -f result                                  # build leaves this link
 - A module under `desktop/` or `laptop/` wraps its config in
   `lib.mkIf config.dotfiles.<part>.enable`; scripts it needs stay in its
   `let` block, next to the options that use them.
+- Scripts call programs by Nix store path (`${pkgs.networkmanager}/bin/nmcli`,
+  `${pkgs.bluez}/bin/bluetoothctl`, `${pkgs.pulseaudio}/bin/pactl`), not
+  the host's PATH; only basic tools (grep, sed, awk, ...) come from PATH.
+  The host provides daemons and what needs root or PAM (`/usr/bin/i3lock`).
 - **Nord everywhere.** Colors come from `nord` in `lib/default.nix`; reuse
   it (and extend it with Nord palette values) instead of hard-coding hex
   values. Theme pieces: GTK `Nordic` (`pkgs.nordic`),

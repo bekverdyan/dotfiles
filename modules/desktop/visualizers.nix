@@ -4,6 +4,7 @@
 { config, lib, pkgs, ... }:
 let
   inherit (import ../../lib { inherit lib; }) nord;
+  pactl = "${pkgs.pulseaudio}/bin/pactl";
 
   # cava settings: the default style (programs.cava) and the base of every
   # preset in the super + v menu
@@ -128,11 +129,11 @@ let
   # `milkdrop`: projectM on whatever is playing. SDL hides "monitor" sources
   # and would record a microphone instead (which also drops Bluetooth
   # headphones into low-quality headset mode), so show monitors and pick
-  # the default output's one by name. pactl comes from the libpulse host
-  # package.
+  # the default output's one by name. pactl is the Nix PulseAudio client,
+  # which talks to the host's PipeWire (pipewire-pulse).
   milkdrop = pkgs.writeShellScriptBin "milkdrop" ''
-    sink=$(pactl get-default-sink)
-    desc=$(pactl list sinks | awk -v s="$sink" '
+    sink=$(${pactl} get-default-sink)
+    desc=$(${pactl} list sinks | awk -v s="$sink" '
       $1 == "Name:" { n = $2 }
       $1 == "Description:" && n == s { sub(/^[ \t]*Description: /, ""); print; exit }')
     [ -n "$desc" ] || { echo "milkdrop: no default audio output" >&2; exit 1; }
