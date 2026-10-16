@@ -153,7 +153,8 @@ Current custom bindings, in short:
   menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `Shift+N`
   Bluetooth menu (rofi-bluetooth, also a click on its icon), `V` cava
   or MilkDrop (style menu, then floating; `Shift` tiled), `H/J/K/L`
-  focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
+  focus (`Shift` swaps, `Ctrl` grows by 20 px, `Ctrl+Shift`
+  shrinks), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; `Print` / `Shift+Print` screenshot of the screen / an area
   to the clipboard (maim + xclip); volume keys via `wpctl` (5% steps,

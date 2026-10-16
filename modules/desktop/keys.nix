@@ -20,6 +20,10 @@ in
         "super + m" = "bspc desktop -l next"; # toggle fullscreen-like monocle
         "super + {t,shift + t,s,f}" = "bspc node -t {tiled,pseudo_tiled,floating,fullscreen}";
         "super + {_,shift + }{h,j,k,l}" = "bspc node -{f,s} {west,south,north,east}";
+        # Resize: grow / shrink the window on the H/J/K/L side by 20 px (a
+        # tiled window moves the split with its neighbor there)
+        "super + ctrl + {h,j,k,l}" = "bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}";
+        "super + ctrl + shift + {h,j,k,l}" = "bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}";
         "super + {_,shift + }{1-9,0}" = "bspc {desktop -f,node -d} '^{1-9,10}'";
         # Volume keys; -l 1.0 caps the volume at 100%
         "XF86Audio{Raise,Lower}Volume" =
