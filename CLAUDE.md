@@ -7,8 +7,11 @@ theme) is defined here.
 ## Layout
 
 - `flake.nix`: inputs (nixpkgs `nixos-unstable`, home-manager, which follows
-  nixpkgs) and the output `homeConfigurations."aram"` (x86_64-linux), built
-  from `hosts/dell-7786.nix`.
+  nixpkgs) and `hosts`, one entry per machine named `user@hostname` with its
+  `system` and host file; each becomes a `homeConfigurations` entry.
+  `aram@arch-aram` (x86_64-linux, `hosts/dell-7786.nix`) is this laptop,
+  also reachable as plain `aram`. A new machine: add a `hosts/<name>.nix`
+  and an entry.
 - `flake.lock`: pinned inputs. Update only on request (`nix flake update`).
 - `hosts/<host>.nix`: one machine. User and home directory,
   `home.stateVersion`, platform bits (`targets.genericLinux` on non-NixOS),

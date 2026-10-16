@@ -9,10 +9,28 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, ... }: {
-    homeConfigurations."aram" = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      modules = [ ./hosts/dell-7786.nix ];
+  outputs = { self, nixpkgs, home-manager, ... }:
+    let
+      # One entry per machine, named user@hostname: `home-manager switch`
+      # without `--flake .#name` picks the entry for the current user and
+      # host. `system` is x86_64-linux, aarch64-linux, aarch64-darwin, ...
+      hosts = {
+        "aram@arch-aram" = {
+          system = "x86_64-linux";
+          module = ./hosts/dell-7786.nix;
+        };
+      };
+
+      mkHome = { system, module }:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${system};
+          modules = [ module ];
+        };
+    in
+    {
+      homeConfigurations = builtins.mapAttrs (_: mkHome) hosts // {
+        # Short name used in the docs: `--flake ~/dotfiles#aram`
+        aram = self.homeConfigurations."aram@arch-aram";
+      };
     };
-  };
 }
