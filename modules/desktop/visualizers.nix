@@ -131,13 +131,15 @@ let
   # headphones into low-quality headset mode), so show monitors and pick
   # the default output's one by name. pactl is the Nix PulseAudio client,
   # which talks to the host's PipeWire (pipewire-pulse).
+  # SDL also blocks the screensaver by default, so a forgotten MilkDrop
+  # window kept the screen from ever locking; allow it.
   milkdrop = pkgs.writeShellScriptBin "milkdrop" ''
     sink=$(${pactl} get-default-sink)
     desc=$(${pactl} list sinks | awk -v s="$sink" '
       $1 == "Name:" { n = $2 }
       $1 == "Description:" && n == s { sub(/^[ \t]*Description: /, ""); print; exit }')
     [ -n "$desc" ] || { echo "milkdrop: no default audio output" >&2; exit 1; }
-    SDL_AUDIO_DRIVER=pulseaudio SDL_AUDIO_INCLUDE_MONITORS=1 \
+    SDL_AUDIO_DRIVER=pulseaudio SDL_AUDIO_INCLUDE_MONITORS=1 SDL_VIDEO_ALLOW_SCREENSAVER=1 \
       exec ${pkgs.projectm-sdl-cpp}/bin/projectMSDL -d "Monitor of $desc" "$@"
   '';
 
