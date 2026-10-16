@@ -1,7 +1,7 @@
 # Key bindings
 
-Cheat sheet for everything installed by `home.nix`.
-Bindings marked **(custom)** are set in `home.nix`; the rest are the app's defaults.
+Cheat sheet for everything installed by this configuration (`modules/`).
+Bindings marked **(custom)** are set in `modules/`; the rest are the app's defaults.
 
 `Super` is the Windows/Logo key. `Prefix` (tmux) is `Ctrl+Space`.
 
@@ -115,7 +115,7 @@ Aurora colors, red to purple), `retro` (a few wide bars), `calm` (slow,
 floating movement), `bass` (only the low end, 30–350 Hz), and `milkdrop`
 (Winamp's MilkDrop visuals, see the next section).
 
-More styles are defined in `home.nix` (`cavaPresets`) but hidden from the
+More styles are defined in `modules/desktop/visualizers.nix` (`cavaPresets`) but hidden from the
 menu: `bars` (the default for plain `cava`), `spectrum`, `center`, `hanging`,
 `hills`, `waves`, `center-hills`, `dense`, `blocks`, `labels`. Add a name to
 `cavaMenuPresets` to show it again.

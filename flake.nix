@@ -12,7 +12,7 @@
   outputs = { nixpkgs, home-manager, ... }: {
     homeConfigurations."aram" = home-manager.lib.homeManagerConfiguration {
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      modules = [ ./home.nix ];
+      modules = [ ./hosts/dell-7786.nix ];
     };
   };
 }
