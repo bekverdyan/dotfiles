@@ -109,7 +109,9 @@ Current custom bindings, in short:
   or MilkDrop (style menu, then floating; `Shift` tiled), `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
-  `Alt+Q` quit; volume keys via `wpctl` (5% steps, capped at 100%);
+  `Alt+Q` quit; `Print` / `Shift+Print` screenshot of the screen / an area
+  to the clipboard (maim + xclip); volume keys via `wpctl` (5% steps,
+  capped at 100%);
   brightness keys and scroll on polybar's brightness via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%), via
   `brightnessStep`, which flashes the bar's icon yellow (up) / red (down)

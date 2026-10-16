@@ -42,6 +42,8 @@ All **(custom)**.
 | `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
 | `Mute` | Mute / unmute |
 | `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (down to 0%, backlight off); the bar's sun flashes yellow / red |
+| `Print` | Screenshot of the whole screen, copied to the clipboard (paste with `Ctrl+V`) |
+| `Shift+Print` | Screenshot of an area (drag) or a window (click), copied to the clipboard; `Esc` cancels |
 | `Super+Esc` | Reload key bindings |
 | `Super+Alt+L` | Lock the screen (blurlock) |
 | `Super+Alt+R` | Restart bspwm |

@@ -860,6 +860,17 @@ in
       "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       # Laptop brightness keys
       "XF86MonBrightness{Up,Down}" = "${brightnessStep} {up,down}";
+      # Screenshot to the clipboard, ready to paste (no file): whole screen /
+      # a dragged area or clicked window, with a Nord frost selection. Two
+      # bindings, since sxhkd's {a,b} would split maim's r,g,b color
+      "Print" = "${pkgs.maim}/bin/maim -u | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png";
+      "shift + Print" =
+        let
+          # maim wants the selection color as r,g,b in 0-1
+          rgb = hex: pkgs.lib.concatMapStringsSep ","
+            (i: toString (pkgs.lib.fromHexString (builtins.substring i 2 hex) / 255.0)) [ 1 3 5 ];
+        in
+        "${pkgs.maim}/bin/maim -u -s -b 2 -c ${rgb nord.accent} | ${pkgs.xclip}/bin/xclip -selection clipboard -t image/png";
     };
   };
 
