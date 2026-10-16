@@ -1,3 +1,7 @@
+| `Super+Ctrl+H/J/K/L` | Grow window left / down / up / right (20 px) |
+| `Super+Ctrl+Shift+H/J/K/L` | Shrink window from the right / top / bottom / left (20 px) |
+| `Super` + right-drag / middle-drag | Resize from the nearest corner / side (bspwm default) |
+| `Super` + left-drag | Move a floating window (bspwm default) |
 # Key bindings
 
 Cheat sheet for everything installed by this configuration (`modules/`).
