@@ -97,7 +97,7 @@ let
   ];
   # Presets offered in the super + v menu; the others stay defined (and in
   # ~/.config/cava/presets) but hidden. Add a name back to show it again.
-  cavaMenuPresets = [ "aurora" "retro" "calm" "bass" ];
+  cavaMenuPresets = [ "aurora" "retro" "calm" "bass" "dense" ];
   cavaPresetDir = pkgs.linkFarm "cava-presets" (map (p: {
     inherit (p) name;
     path = pkgs.writeText "cava-${p.name}"
