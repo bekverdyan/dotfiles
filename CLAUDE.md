@@ -7,10 +7,36 @@ theme) is defined here.
 ## Layout
 
 - `flake.nix`: inputs (nixpkgs `nixos-unstable`, home-manager, which follows
-  nixpkgs) and the single output `homeConfigurations."aram"` (x86_64-linux).
+  nixpkgs) and `hosts`, one entry per machine named `user@hostname` with its
+  `system` and host file; each becomes a `homeConfigurations` entry.
+  `aram@arch-aram` (x86_64-linux, `hosts/dell-7786.nix`) is this laptop,
+  also reachable as plain `aram`. A new machine: add a `hosts/<name>.nix`
+  and an entry.
 - `flake.lock`: pinned inputs. Update only on request (`nix flake update`).
-- `home.nix`: the whole configuration, in one file, split by
-  `# ---------- Section ----------` comments.
+- `hosts/<host>.nix`: one machine. User and home directory,
+  `home.stateVersion`, platform bits (`targets.genericLinux` on non-NixOS),
+  and which parts are on via the `dotfiles.*` options.
+- `modules/`: the configuration, imported by every host
+  (`modules/default.nix`):
+  - `core/`: always on and machine-independent: shells (`shell.nix`),
+    `tmux.nix`, `vim.nix`, `git.nix`, CLI tools.
+  - `desktop/` (`dotfiles.desktop.enable`): the X11 desktop. `xsession.nix`
+    (bspwm, keyboard layouts, screen lock), `keys.nix` (sxhkd), `bar.nix`
+    (polybar, layout flags font), `theme.nix`, `apps.nix` (rofi, Alacritty,
+    Firefox), `network.nix` (Wi-Fi/Bluetooth menus, bar modules,
+    `bluetooth-setup`), `visualizers.nix` (cava, MilkDrop), `login.nix`
+    (`dotfiles.lightdm.enable`: `lightdm-setup`). Option
+    `dotfiles.wallpaper`.
+  - `laptop/` (`dotfiles.laptop.enable`, plus `battery`, `adapter`,
+    `backlight`, `display` names): `battery.nix` (bar), `screen.nix`
+    (brightness keys/flash, rotation), `dell-charge-limits.nix`
+    (`dotfiles.laptop.dellChargeLimits`: `battery-setup`, `battery-full`).
+  Feature modules add their own keys, bar modules and bspwm rules to the
+  shared options (`services.sxhkd.keybindings`,
+  `services.polybar.settings`, ...).
+- `lib/default.nix`: shared values: `nord` palette, polybar `icons`,
+  `barIcon`, `char`. Import with
+  `inherit (import ../../lib { inherit lib; }) nord icons;`.
 - `KEYBINDINGS.md`: user-facing cheat sheet of every key binding.
 - `HOST-PACKAGES.md`: what must come from pacman (not Nix) and its
   one-time root setup. Update it when a change needs a host package.
@@ -25,9 +51,10 @@ theme) is defined here.
   programs use the host GPU drivers via `targets.genericLinux.gpu`.
 - X11 session started by LightDM (slick-greeter, Nord), whose `bspwm`
   session runs the `~/.xinitrc` Home Manager writes. LightDM's files live
-  outside `$HOME`: after changing them in `home.nix`, the user reruns
-  `sudo lightdm-setup`.
-- Dell Inspiron 7786. Battery charge limits (`battery` in `home.nix`, Dell
+  outside `$HOME`: after changing `modules/desktop/login.nix`, the user
+  reruns `sudo lightdm-setup`.
+- Dell Inspiron 7786. Battery charge limits (`dellChargeLimits` in
+  `hosts/dell-7786.nix`, Dell
   allows start 50–95, end 55–100; set to 75–80 since it is mostly plugged
   in) are applied by `sudo battery-setup`; `sudo battery-full` sets 95–100
   until the next boot. Both are also shell aliases that run them with sudo
@@ -53,11 +80,11 @@ home-manager switch --flake ~/dotfiles#aram   # build and activate
 rm -f result                                  # build leaves this link
 ```
 
-- Always `build` (or `switch`) after editing `home.nix` and fix every
+- Always `build` (or `switch`) after editing a `.nix` file and fix every
   **warning**, not just errors. Option renames and deprecations show up as
   warnings (e.g. `programs.rofi.font` → `programs.rofi.settings.font`).
 - If `switch` reports "Existing file ... is in the way", check what the
-  file holds and migrate anything worth keeping into `home.nix` first, then
+  file holds and migrate anything worth keeping into the config first, then
   use `home-manager switch -b backup ...` so the old file is kept as
   `*.backup`. Never delete the user's files to get past this.
 - **Flakes only see files tracked by git.** A new file must be `git add`ed
@@ -71,23 +98,42 @@ rm -f result                                  # build leaves this link
 - The X display is `:0`; settings such as `setxkbmap` can be applied live
   with `DISPLAY=:0`.
 
-## Conventions in `home.nix`
+- For a pure refactor (moving code, no behaviour change), compare the build
+  with the previous one: every leaf store path (scripts, config files,
+  packages) must stay the same; `comm` the sorted `nix-store -qR` of the
+  old and new `activationPackage`. Only collector outputs
+  (`home-manager-path`, `-files`, `-generation`, `hm-putter.json`,
+  `hm_hmfontconfigfonts.xml`) may differ, through ordering.
 
-- **Nord everywhere.** Colors come from the `nord` attrset in the `let`
-  block; reuse it (and extend it with Nord palette values) instead of
-  hard-coding hex values. Theme pieces: GTK `Nordic` (`pkgs.nordic`),
+## Conventions in the Nix files
+
+- **Machine-specific facts go in `hosts/`**, through `dotfiles.*` options
+  (hardware names, charge limits, which parts are on), never hard-coded in
+  `modules/`. `core/` must work on any platform; X11 things go in
+  `desktop/`, laptop hardware in `laptop/`.
+- A module under `desktop/` or `laptop/` wraps its config in
+  `lib.mkIf config.dotfiles.<part>.enable`; scripts it needs stay in its
+  `let` block, next to the options that use them.
+- Scripts call programs by Nix store path (`${pkgs.networkmanager}/bin/nmcli`,
+  `${pkgs.bluez}/bin/bluetoothctl`, `${pkgs.pulseaudio}/bin/pactl`), not
+  the host's PATH; only basic tools (grep, sed, awk, ...) come from PATH.
+  The host provides daemons and what needs root or PAM (`/usr/bin/i3lock`).
+- **Nord everywhere.** Colors come from `nord` in `lib/default.nix`; reuse
+  it (and extend it with Nord palette values) instead of hard-coding hex
+  values. Theme pieces: GTK `Nordic` (`pkgs.nordic`),
   icons `Papirus-Dark` (`pkgs.papirus-nord`), cursor `Nordic-cursors`,
   Qt via Kvantum `Nordic`, Alacritty `theme = "nord"`, tmux
   `tmuxPlugins.nord`, vim `nord-vim`, fzf colors from `nord`, rofi theme
   built from `nord`.
 - Prefer a `programs.<name>` / `services.<name>` module over adding to
   `home.packages`, so config and shell integration are managed too.
-- Put a new section under a `# ---------- Name ----------` header, and keep
-  comments short, explaining *why* or what a key does.
+- Put a new feature in its own module file (or the closest existing one),
+  starting with a short comment on what it is, and keep comments short,
+  explaining *why* or what a key does.
 - Shell config is shared between bash and zsh: aliases in
-  `home.shellAliases`, shared functions as strings in the `let` block (see
-  `fffCd`, used by both `programs.bash.initExtra` and
-  `programs.zsh.initContent`).
+  `home.shellAliases`, shared functions as strings in the `let` block of
+  `modules/core/shell.nix` (see `fffCd`, used by both
+  `programs.bash.initExtra` and `programs.zsh.initContent`).
 - Both shells use the starship prompt with the **Pure preset**, read from
   `${pkgs.starship}/share/starship/presets/pure-preset.toml`.
 - Check an option exists before using it, e.g.
@@ -151,4 +197,4 @@ Current custom bindings, in short:
 - `~/.config/home-manager.old/`: the original local repo before moving to
   `~/dotfiles`; safe to delete once the user agrees.
 - `~/.bashrc.backup`, `~/.bash_profile.backup`: pre-Home-Manager bash files;
-  their contents were migrated into `home.nix`.
+  their contents were migrated into `modules/core/shell.nix`.

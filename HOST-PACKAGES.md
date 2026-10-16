@@ -1,6 +1,6 @@
 # Host packages
 
-Everything in `home.nix` comes from Nix. This file lists what has to be
+Everything in `modules/` comes from Nix. This file lists what has to be
 installed on Arch itself with `pacman`, and the one-time setup each piece
 needs. Mostly these are things that run as root or outside `$HOME`, like
 drivers, system services, PAM and the login screen.
@@ -86,8 +86,9 @@ sudo systemctl enable lightdm
 | `lightdm-slick-greeter` | the greeter set in `slick-greeter.conf` |
 | `papirus-icon-theme` | `Papirus-Dark` icons for the greeter (Nix copy isn't visible to it) |
 
-Rerun `sudo "$(command -v lightdm-setup)"` after changing the LightDM part of
-`home.nix`. `sudo` resets `PATH`, which is why the full path is passed.
+Rerun `sudo "$(command -v lightdm-setup)"` after changing
+`modules/desktop/login.nix`. `sudo` resets `PATH`, which is why the full path
+is passed.
 
 ## 5. Screen lock
 
@@ -112,7 +113,7 @@ sudo pacman -S pipewire pipewire-pulse pipewire-alsa pipewire-jack \
 | `pipewire-pulse` | PulseAudio API, used by the polybar volume module and pavucontrol |
 | `pipewire-alsa`, `pipewire-jack` | route ALSA and JACK apps through PipeWire |
 | `gst-plugin-pipewire` | GStreamer apps (browsers, players) through PipeWire |
-| `libpulse` | PulseAudio client library and `pactl` (also used by `milkdrop`) |
+| `libpulse` | PulseAudio client library and `pactl` |
 
 The user services are socket-activated, so nothing needs enabling. To check:
 `systemctl --user status pipewire wireplumber`.
@@ -143,8 +144,9 @@ bluetooth-setup   # alias for: sudo "$(command -v bluetooth-setup)"
 ## 8. Battery charge limits
 
 No package needed: the `dell_laptop` kernel driver controls charging. The
-limits are set in `home.nix` (`battery`: stop at 80%, start again below
-75%, for a laptop that is mostly plugged in). Writing them needs root:
+limits are set in `hosts/dell-7786.nix` (`dellChargeLimits`: stop at 80%,
+start again below 75%, for a laptop that is mostly plugged in). Writing them
+needs root:
 
 ```sh
 battery-setup   # alias for: sudo "$(command -v battery-setup)"
