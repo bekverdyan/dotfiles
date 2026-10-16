@@ -191,10 +191,3 @@ Current custom bindings, in short:
 - Git identity (`Aram Bekverdyan <aram.bekverdyan@gmail.com>`) is set
   globally by `programs.git`. Older commits in the repo history use
   `bekverdyan@pm.me`.
-
-## Leftovers on the machine
-
-- `~/.config/home-manager.old/`: the original local repo before moving to
-  `~/dotfiles`; safe to delete once the user agrees.
-- `~/.bashrc.backup`, `~/.bash_profile.backup`: pre-Home-Manager bash files;
-  their contents were migrated into `modules/core/shell.nix`.
