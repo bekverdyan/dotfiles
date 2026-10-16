@@ -112,12 +112,13 @@ Shows whatever is playing, in a Nord gradient.
 
 Both keys first open a rofi menu of styles (`Esc` cancels): `aurora` (Nord
 Aurora colors, red to purple), `retro` (a few wide bars), `calm` (slow,
-floating movement), `bass` (only the low end, 30–350 Hz), and `milkdrop`
+floating movement), `bass` (only the low end, 30–350 Hz), `dense` (thin
+bars, no gaps), and `milkdrop`
 (Winamp's MilkDrop visuals, see the next section).
 
 More styles are defined in `modules/desktop/visualizers.nix` (`cavaPresets`) but hidden from the
 menu: `bars` (the default for plain `cava`), `spectrum`, `center`, `hanging`,
-`hills`, `waves`, `center-hills`, `dense`, `blocks`, `labels`. Add a name to
+`hills`, `waves`, `center-hills`, `blocks`, `labels`. Add a name to
 `cavaMenuPresets` to show it again.
 
 ## MilkDrop (projectM, `milkdrop` in the `Super+V` menu)
