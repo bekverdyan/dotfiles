@@ -31,7 +31,10 @@ theme) is defined here.
   allows start 50–95, end 55–100; set to 75–80 since it is mostly plugged
   in) are applied by `sudo battery-setup`; `sudo battery-full` sets 95–100
   until the next boot. Both are also shell aliases that run them with sudo
-  (sudo doesn't search the Nix profile).
+  (sudo doesn't search the Nix profile). The firmware drains the battery on
+  the charger when above the stop limit, can then stick at ~50 mA "Charging"
+  until the charger is re-plugged, and reads ~8–10 points above Linux's
+  percentage; the polybar battery script shows `draining` / `replug`.
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,

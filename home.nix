@@ -393,27 +393,35 @@ let
   '';
   # Polybar battery label: a level icon on battery, a green charging icon
   # while charging, a plug when plugged in but not charging (held by the
-  # limits, or full), and a yellow alert at 10% or less. Above the stop
-  # limit on the charger (after battery-full), a yellow plug says "unplug":
-  # the firmware can't discharge, only using the battery brings it down.
-  # The limit is read from the firmware, so battery-full's 100 shows no hint.
+  # limits, or full), and a yellow alert at 10% or less. Two Dell quirks:
+  # - above the stop limit (e.g. after battery-full) the firmware runs the
+  #   laptop from the battery, charger plugged in, down to the start limit:
+  #   a dimmed plug with "draining" (status Discharging while AC is online);
+  # - after that it can stay in "Charging" while letting only ~50 mA in, so
+  #   the battery still drains under load until the charger is re-plugged:
+  #   a yellow plug with "replug" when charging below 200 mA. Under 90% only,
+  #   since the current legitimately tapers off near full.
   # Check the names with: ls /sys/class/power_supply
   batteryStatus = pkgs.writeShellScript "polybar-battery" ''
     bat=/sys/class/power_supply/BAT0
     read -r status < $bat/status
     read -r pct < $bat/capacity
-    read -r stop < $bat/charge_control_end_threshold
+    read -r ac < /sys/class/power_supply/AC/online
+    # current_now briefly fails ("No such device") on some reads
+    ma=$(( $(cat $bat/current_now 2>/dev/null || echo -1000) / 1000 ))
     level=(${pkgs.lib.escapeShellArgs icons.battery})
     charging=(${pkgs.lib.escapeShellArgs icons.batteryCharging})
     i=$(( (pct + 5) / 10 )); (( i < 1 )) && i=1; (( i > 10 )) && i=10
     case $status in
-      Charging) echo "${barIcon nord.green "\${charging[i-1]}"} $pct%" ;;
+      Charging)
+        if (( ma >= 0 && ma < 200 && pct < 90 )); then
+          echo "${barIcon nord.yellow icons.plug} %{F${nord.yellow}}$pct% replug%{F-}"
+        else echo "${barIcon nord.green "\${charging[i-1]}"} $pct%"; fi ;;
       Discharging)
-        if (( pct <= 10 )); then echo "${barIcon nord.yellow icons.batteryAlert} %{F${nord.yellow}}$pct%%{F-}"
+        if (( ac == 1 )); then echo "${barIcon nord.muted icons.plug} %{F${nord.muted}}$pct% draining%{F-}"
+        elif (( pct <= 10 )); then echo "${barIcon nord.yellow icons.batteryAlert} %{F${nord.yellow}}$pct%%{F-}"
         else echo "${barIcon nord.accent "\${level[i-1]}"} $pct%"; fi ;;
-      *) # "Not charging", "Full"
-        if (( pct > stop )); then echo "${barIcon nord.yellow icons.plug} %{F${nord.yellow}}$pct% unplug%{F-}"
-        else echo "${barIcon nord.accent icons.plug} $pct%"; fi ;;
+      *) echo "${barIcon nord.accent icons.plug} $pct%" ;; # "Not charging", "Full"
     esac
   '';
   # Polybar Bluetooth label: a dimmed crossed-out icon when off, the icon
