@@ -12,6 +12,8 @@ theme) is defined here.
 - `home.nix`: the whole configuration, in one file, split by
   `# ---------- Section ----------` comments.
 - `KEYBINDINGS.md`: user-facing cheat sheet of every key binding.
+- `HOST-PACKAGES.md`: what must come from pacman (not Nix) and its
+  one-time root setup. Update it when a change needs a host package.
 - `.gitignore`: `*.bak`, `result`, `result-*`.
 
 `~/.config/home-manager` is a symlink to this repo (`~/dotfiles`), so
@@ -21,7 +23,18 @@ theme) is defined here.
 
 - Arch Linux, **not NixOS**: `targets.genericLinux.enable = true`. Nix
   programs use the host GPU drivers via `targets.genericLinux.gpu`.
-- X11 session started with `startx`; Home Manager writes `~/.xinitrc`.
+- X11 session started by LightDM (slick-greeter, Nord), whose `bspwm`
+  session runs the `~/.xinitrc` Home Manager writes. LightDM's files live
+  outside `$HOME`: after changing them in `home.nix`, the user reruns
+  `sudo lightdm-setup`.
+- Dell Inspiron 7786. Battery charge limits (`battery` in `home.nix`, Dell
+  allows start 50–95, end 55–100; set to 75–80 since it is mostly plugged
+  in) are applied by `sudo battery-setup`; `sudo battery-full` sets 95–100
+  until the next boot. Both are also shell aliases that run them with sudo
+  (sudo doesn't search the Nix profile). The firmware drains the battery on
+  the charger when above the stop limit, can then stick at ~50 mA "Charging"
+  until the charger is re-plugged, and reads ~8–10 points above Linux's
+  percentage; the polybar battery script shows `draining` / `replug`.
 - Window manager bspwm, keys by sxhkd, bar polybar, launcher rofi,
   terminal Alacritty, browser Firefox.
 - Login shell is still `/usr/bin/bash`. zsh is installed and configured,
@@ -53,6 +66,8 @@ rm -f result                                  # build leaves this link
   (`bash -ic '...'`, `zsh -ic '...'`, or `script -qec '...' /dev/null`
   when a TTY is needed), inspect generated files under `~/.config`, or start
   a throwaway tmux server (`tmux -L test ...`, then `kill-server`).
+- `switch` reloads sxhkd by itself when its bindings change (an `onChange`
+  hook on `sxhkdrc`); no manual `pkill -USR1 -x sxhkd` needed.
 - The X display is `:0`; settings such as `setxkbmap` can be applied live
   with `DISPLAY=:0`.
 
@@ -88,12 +103,24 @@ app with keys worth knowing, **update `KEYBINDINGS.md` in the same
 commit**, marking user-set bindings **(custom)**.
 
 Current custom bindings, in short:
-- sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `H/J/K/L`
+- sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `N` Wi-Fi
+  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `Shift+N`
+  Bluetooth menu (rofi-bluetooth, also a click on its icon), `V` cava
+  or MilkDrop (style menu, then floating; `Shift` tiled), `H/J/K/L`
   focus (`Shift` swaps), `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
-  `Alt+Q` quit.
-- Keyboard: layouts `us,am` toggled with `Alt+Shift`; `Caps Lock` is `Esc`
-  (`caps:escape`, set via `setxkbmap` in bspwm `startupPrograms`).
+  `Alt+Q` quit; `Print` / `Shift+Print` screenshot of the screen / an area
+  to the clipboard (maim + xclip); volume keys via `wpctl` (5% steps,
+  capped at 100%);
+  brightness keys and scroll on polybar's brightness via `brightnessctl`
+  (through logind, since the sysfs file is root-only; down to 0%), via
+  `brightnessStep`, which flashes the bar's icon yellow (up) / red (down)
+  over polybar IPC.
+- Keyboard: layouts `us,am,ru` (am `phonetic-alt`, ru `phonetic`) cycled with `Alt+Shift`,
+  shown in polybar as flags (xkeyboard module, `flagFont` built from Noto
+  Color Emoji, since polybar can't shape emoji flags);
+  `Caps Lock` is `Esc` (`caps:escape`, set via `setxkbmap` in bspwm
+  `startupPrograms`).
 - tmux: prefix `Ctrl+Space`; `\` and `-` split in the current directory;
   `escapeTime = 0` so `Esc` has no delay in vim.
 - Shell: `f` runs fff and `cd`s into the directory it was quit in;
