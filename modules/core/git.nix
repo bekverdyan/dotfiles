@@ -5,6 +5,7 @@
       name = "Aram Bekverdyan";
       email = "aram.bekverdyan@gmail.com";
     };
+    settings.alias.lg = "log --oneline";
   };
 
   # Run `gh auth login` once; git then gets GitHub credentials from gh
