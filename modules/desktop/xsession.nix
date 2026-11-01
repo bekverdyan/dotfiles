@@ -22,6 +22,7 @@ in
     home.packages = [
       pkgs.feh # wallpaper
       blurlock # lock the screen (also Super+Alt+L)
+      pkgs.xclip # clipboard CLI that gh, vim and others look up on PATH
     ];
 
     xsession = {
