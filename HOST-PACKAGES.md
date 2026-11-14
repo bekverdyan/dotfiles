@@ -171,6 +171,19 @@ charger for ~10 s and plugging it back in restores normal charging (~1.2 A).
 The firmware's own percentage reads ~8–10 points above Linux's, so its 75–80%
 limits show as about 65–72% in the bar.
 
+## 9. Disk encryption (cryptsetup)
+
+No install needed: Arch's `systemd` depends on `cryptsetup`, so
+`/usr/bin/cryptsetup` is always there. It is deliberately not in Home
+Manager. It runs as root (`sudo` doesn't search the Nix profile), and it
+works with the host's kernel, udev and device-mapper, so the host's copy is
+the one to use:
+
+```sh
+sudo cryptsetup luksOpen /dev/sdX1 data   # then mount /dev/mapper/data
+sudo cryptsetup close data
+```
+
 ## Optional: zsh as the login shell
 
 zsh is installed and configured by Home Manager, but the login shell is still
