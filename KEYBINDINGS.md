@@ -31,7 +31,7 @@ All **(custom)**.
 | `Super+Shift+V` | Audio visualizer: pick a cava style or MilkDrop, opens tiled |
 | `Super+H/J/K/L` | Focus window left / down / up / right |
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
-| `Super+1` … `Super+0` | Go to desktop 1 … 10 |
+| `Super+1` … `Super+0` | Go to desktop 1 … 10; desktop 9 is on the external monitor while one is plugged in **(custom)** |
 | `Super+Shift+1` … `Super+Shift+0` | Send window to desktop 1 … 10 |
 | `Super+E` | Android emulator focused: show it at a real screen's size (`dotfiles.realSize`, a 15.6" car screen), floating at the top left; again puts it back **(custom)** |
 | `Super+W` | Close window |

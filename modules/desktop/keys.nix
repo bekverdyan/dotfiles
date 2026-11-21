@@ -24,7 +24,8 @@ in
         # tiled window moves the split with its neighbor there)
         "super + ctrl + {h,j,k,l}" = "bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}";
         "super + ctrl + shift + {h,j,k,l}" = "bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}";
-        "super + {_,shift + }{1-9,0}" = "bspc {desktop -f,node -d} '^{1-9,10}'";
+        # By name, not index: desktop 9 may sit on the external monitor
+        "super + {_,shift + }{1-9,0}" = "bspc {desktop -f,node -d} {1-9,10}";
         # Volume keys; -l 1.0 caps the volume at 100%
         "XF86Audio{Raise,Lower}Volume" =
           "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%{+,-}";
