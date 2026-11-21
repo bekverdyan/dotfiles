@@ -26,7 +26,9 @@ theme) is defined here.
     Firefox), `network.nix` (Wi-Fi/Bluetooth menus, bar modules,
     `bluetooth-setup`), `monitors.nix` (external monitor via srandrd,
     `dotfiles.externalMonitor`), `visualizers.nix` (cava, MilkDrop), `real-size.nix`
-    (Super+E: the emulator at a real screen's size), `login.nix`
+    (Super+E: the emulator at a real screen's size), `emulator-limits.nix`
+    (`dotfiles.emulatorLimits`: Android emulators capped in
+    `emulator.slice`), `login.nix`
     (`dotfiles.lightdm.enable`: `lightdm-setup`). Option
     `dotfiles.wallpaper`.
   - `laptop/` (`dotfiles.laptop.enable`, plus `battery`, `adapter`,
