@@ -49,7 +49,7 @@ All **(custom)**.
 | `Print` | Screenshot of the whole screen, copied to the clipboard (paste with `Ctrl+V`) |
 | `Shift+Print` | Screenshot of an area (drag) or a window (click), copied to the clipboard; `Esc` cancels |
 | `Super+Esc` | Reload key bindings |
-| `Super+Alt+L` | Lock the screen (blurlock) |
+| `Super+Alt+L` | Lock the screen (blurlock). The lock screen always starts in US; `Alt+Shift` still cycles layouts there, and the earlier layout returns after unlocking **(custom)** |
 | `Super+Alt+R` | Restart bspwm |
 | `Super+Alt+Q` | Quit bspwm (log out) |
 
