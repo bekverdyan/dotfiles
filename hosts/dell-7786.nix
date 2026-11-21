@@ -18,13 +18,13 @@
     lightdm.enable = true;
     # Desktop 9 goes to an external monitor while one is plugged in
     externalMonitor.desktops = [ "9" ];
-    # Android emulators together: half the 8 CPU threads, at most 8 of the
-    # 16 GB RAM (slowed and swapped above 6 GB)
+    # Android emulators together: half the 8 CPU threads, at most 4 GB of
+    # the 16 GB RAM (slowed and swapped above 3.5 GB)
     emulatorLimits = {
       enable = true;
       cpuQuota = "400%";
-      memoryHigh = "6G";
-      memoryMax = "8G";
+      memoryHigh = "3584M";
+      memoryMax = "4G";
     };
 
     laptop = {
