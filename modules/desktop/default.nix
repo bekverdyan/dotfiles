@@ -14,6 +14,7 @@
     ./visualizers.nix
     ./real-size.nix
     ./ranger.nix
+    ./emulator-limits.nix
     ./login.nix
   ];
 
