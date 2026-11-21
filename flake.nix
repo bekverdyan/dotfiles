@@ -23,7 +23,12 @@
 
       mkHome = { system, module }:
         home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs {
+            inherit system;
+            # Unfree packages allowed by name, nothing else
+            config.allowUnfreePredicate = pkg:
+              builtins.elem (nixpkgs.lib.getName pkg) [ "google-chrome" ];
+          };
           modules = [ module ];
         };
     in

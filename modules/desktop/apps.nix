@@ -1,5 +1,5 @@
 # Desktop apps: rofi (launcher, also the menus' look), Alacritty, Firefox,
-# the volume mixer.
+# the volume mixer, Telegram, Chrome.
 { config, lib, pkgs, ... }:
 let
   inherit (import ../../lib { inherit lib; }) nord;
@@ -8,6 +8,7 @@ in
   config = lib.mkIf config.dotfiles.desktop.enable {
     home.packages = [
       pkgs.pavucontrol # volume mixer (right-click the volume in the bar)
+      pkgs.telegram-desktop
     ];
     xsession.windowManager.bspwm.rules."Pavucontrol".state = "floating";
 
@@ -83,5 +84,8 @@ in
       enable = true;
       configPath = "${config.xdg.configHome}/mozilla/firefox";
     };
+
+    # Unfree, allowed in flake.nix
+    programs.google-chrome.enable = true;
   };
 }
