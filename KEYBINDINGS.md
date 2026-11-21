@@ -35,6 +35,13 @@ All **(custom)**.
 | `Super+Shift+1` … `Super+Shift+0` | Send window to desktop 1 … 10 |
 | `Super+W` | Close window |
 | `Super+Shift+W` | Kill window (force) |
+| `Super+←/↓/↑/→` | Preselect: the next window opens on that side of the focused one (or group); same key again cancels **(custom)** |
+| `Super+Ctrl+Space` | Cancel the preselection **(custom)** |
+| `Super+Ctrl+1` … `Super+Ctrl+9` | Preselection ratio 10% … 90% **(custom)** |
+| `Super+P` | Focus the parent: select the group (container) around the window, to preselect, move or close it as one **(custom)** |
+| `Super+Shift+P` | Focus the first child: back down into the group **(custom)** |
+| `Super+I` | Insert an empty placeholder; the next window opens in it **(custom)** |
+| `Super+Shift+I` | Remove all empty placeholders **(custom)** |
 | `Super+M` | Toggle monocle (one window fills the desktop) |
 | `Super+T` | Tiled |
 | `Super+Shift+T` | Pseudo-tiled |

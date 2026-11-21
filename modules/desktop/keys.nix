@@ -24,6 +24,16 @@ in
         # tiled window moves the split with its neighbor there)
         "super + ctrl + {h,j,k,l}" = "bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}";
         "super + ctrl + shift + {h,j,k,l}" = "bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}";
+        # Containers, i3-style: preselect where the next window opens (again
+        # cancels), the split ratio, and focus the parent to split against
+        # the whole group (first child goes back down)
+        "super + {Left,Down,Up,Right}" = "bspc node -p '~{west,south,north,east}'";
+        "super + ctrl + space" = "bspc node -p cancel";
+        "super + ctrl + {1-9}" = "bspc node -o 0.{1-9}";
+        "super + {_,shift + }p" = "bspc node -f @{parent,first}";
+        # Empty placeholder the next window fills / remove the empty ones
+        "super + i" = "bspc node -i";
+        "super + shift + i" = "while bspc node 'any.leaf.!window' -k; do :; done";
         "super + {_,shift + }{1-9,0}" = "bspc {desktop -f,node -d} '^{1-9,10}'";
         # Volume keys; -l 1.0 caps the volume at 100%
         "XF86Audio{Raise,Lower}Volume" =

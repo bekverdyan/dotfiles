@@ -39,6 +39,7 @@ in
           gapless_monocle = true;
           focused_border_color = nord.accent;
           normal_border_color = nord.bgAlt;
+          presel_feedback_color = nord.frost4; # area of a preselection
         };
         startupPrograms = [
           # US, Armenian (phonetic-alt: 8 is Ր, R is Ռ) and Russian (phonetic)

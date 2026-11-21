@@ -154,7 +154,9 @@ Current custom bindings, in short:
   Bluetooth menu (rofi-bluetooth, also a click on its icon), `V` cava
   or MilkDrop (style menu, then floating; `Shift` tiled), `H/J/K/L`
   focus (`Shift` swaps, `Ctrl` grows by 20 px, `Ctrl+Shift`
-  shrinks), `1-0` desktops (`Shift` sends window), `W` close,
+  shrinks), arrows preselect (`Ctrl+Space` cancels, `Ctrl+1-9` ratio),
+  `P` / `Shift+P` focus parent / first child, `I` / `Shift+I` insert /
+  remove receptacles, `1-0` desktops (`Shift` sends window), `W` close,
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; `Print` / `Shift+Print` screenshot of the screen / an area
   to the clipboard (maim + xclip); volume keys via `wpctl` (5% steps,
