@@ -7,15 +7,22 @@ let
   # Manjaro-style blurlock: a blurred screenshot of the desktop behind i3lock.
   # i3lock comes from pacman (`sudo pacman -S i3lock`): a Nix-built one can't
   # check passwords on Arch, since PAM needs the host's setuid helper.
+  # It always starts in the first layout (US), since i3lock shows no layout;
+  # Alt+Shift still cycles them while locked, and the one in use before
+  # locking comes back after unlocking.
   blurlock = pkgs.writeShellScriptBin "blurlock" ''
     img="''${XDG_RUNTIME_DIR:-/tmp}/blurlock.png"
     ${pkgs.imagemagick}/bin/magick x:root -scale 20% -blur 0x2.5 -resize 500% -depth 8 "$img"
+    group=$(${xkblayout} print %c)
+    ${xkblayout} set 0
     # -n stays in the foreground so xss-lock knows when it's unlocked
     /usr/bin/i3lock -n -e -f -c ${builtins.substring 1 6 nord.bg} -i "$img" "$@"
     status=$?
     rm -f "$img"
+    [ -n "$group" ] && ${xkblayout} set "$group"
     exit $status
   '';
+  xkblayout = "${pkgs.xkblayout-state}/bin/xkblayout-state";
 in
 {
   config = lib.mkIf config.dotfiles.desktop.enable {
