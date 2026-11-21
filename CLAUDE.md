@@ -163,7 +163,9 @@ Current custom bindings, in short:
   `M` monocle, `T/S/F` tiled/floating/fullscreen, `Alt+R` restart,
   `Alt+Q` quit; `Print` / `Shift+Print` screenshot of the screen / an area
   to the clipboard (maim + xclip); volume keys via `wpctl` (5% steps,
-  capped at 100%);
+  capped at 100%); media keys and Bluetooth headphones' buttons (AVRCP)
+  via `playerctl` to the most recently active player (`playerctld`),
+  `Play` and `Pause` both toggle;
   brightness keys and scroll on polybar's brightness via `brightnessctl`
   (through logind, since the sysfs file is root-only; down to 0%), via
   `brightnessStep`, which flashes the bar's icon yellow (up) / red (down)

@@ -46,6 +46,9 @@ All **(custom)**.
 | `Super+Ctrl+↓` | Rotate screen upside down |
 | `Volume Up` / `Volume Down` | Volume up / down by 5% (max 100%) |
 | `Mute` | Mute / unmute |
+| `Play` / `Pause`, a double tap on the headphones | Play / pause the most recently active player (Firefox, Chrome, Telegram, ...); both keys toggle **(custom)** |
+| `Next` / `Previous`, swipe forward / back on the headphones | Next / previous track **(custom)** |
+| `Stop` | Stop playback **(custom)** |
 | `Brightness Up` / `Brightness Down` | Screen brightness up / down by 5% (down to 0%, backlight off); the bar's sun flashes yellow / red |
 | `Print` | Screenshot of the whole screen, copied to the clipboard (paste with `Ctrl+V`) |
 | `Shift+Print` | Screenshot of an area (drag) or a window (click), copied to the clipboard; `Esc` cancels |
