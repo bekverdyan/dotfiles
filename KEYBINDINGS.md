@@ -33,6 +33,7 @@ All **(custom)**.
 | `Super+Shift+H/J/K/L` | Swap window left / down / up / right |
 | `Super+1` … `Super+0` | Go to desktop 1 … 10 |
 | `Super+Shift+1` … `Super+Shift+0` | Send window to desktop 1 … 10 |
+| `Super+E` | Android emulator focused: show it at a real screen's size (`dotfiles.realSize`, a 15.6" car screen), floating at the top left; again puts it back **(custom)** |
 | `Super+W` | Close window |
 | `Super+Shift+W` | Kill window (force) |
 | `Super+M` | Toggle monocle (one window fills the desktop) |

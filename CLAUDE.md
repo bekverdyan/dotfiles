@@ -24,7 +24,8 @@ theme) is defined here.
     (bspwm, keyboard layouts, screen lock), `keys.nix` (sxhkd), `bar.nix`
     (polybar, layout flags font), `theme.nix`, `apps.nix` (rofi, Alacritty,
     Firefox), `network.nix` (Wi-Fi/Bluetooth menus, bar modules,
-    `bluetooth-setup`), `visualizers.nix` (cava, MilkDrop), `login.nix`
+    `bluetooth-setup`), `visualizers.nix` (cava, MilkDrop), `real-size.nix`
+    (Super+E: the emulator at a real screen's size), `login.nix`
     (`dotfiles.lightdm.enable`: `lightdm-setup`). Option
     `dotfiles.wallpaper`.
   - `laptop/` (`dotfiles.laptop.enable`, plus `battery`, `adapter`,
@@ -150,7 +151,8 @@ commit**, marking user-set bindings **(custom)**.
 
 Current custom bindings, in short:
 - sxhkd: `Super` + `Enter` terminal, `Space` rofi, `B` Firefox, `N` Wi-Fi
-  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `Shift+N`
+  menu (networkmanager_dmenu, also a click on Wi-Fi in polybar), `E` the
+  focused Android emulator at real size and back (`real-size.nix`), `Shift+N`
   Bluetooth menu (rofi-bluetooth, also a click on its icon), `V` cava
   or MilkDrop (style menu, then floating; `Shift` tiled), `H/J/K/L`
   focus (`Shift` swaps, `Ctrl` grows by 20 px, `Ctrl+Shift`

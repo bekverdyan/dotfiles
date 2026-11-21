@@ -11,6 +11,7 @@
     ./apps.nix
     ./network.nix
     ./visualizers.nix
+    ./real-size.nix
     ./login.nix
   ];
 
