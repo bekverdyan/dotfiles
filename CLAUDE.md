@@ -24,7 +24,8 @@ theme) is defined here.
     (bspwm, keyboard layouts, screen lock), `keys.nix` (sxhkd), `bar.nix`
     (polybar, layout flags font), `theme.nix`, `apps.nix` (rofi, Alacritty,
     Firefox), `network.nix` (Wi-Fi/Bluetooth menus, bar modules,
-    `bluetooth-setup`), `visualizers.nix` (cava, MilkDrop), `real-size.nix`
+    `bluetooth-setup`), `monitors.nix` (external monitor via srandrd,
+    `dotfiles.externalMonitor`), `visualizers.nix` (cava, MilkDrop), `real-size.nix`
     (Super+E: the emulator at a real screen's size), `login.nix`
     (`dotfiles.lightdm.enable`: `lightdm-setup`). Option
     `dotfiles.wallpaper`.

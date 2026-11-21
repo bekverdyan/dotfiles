@@ -10,6 +10,7 @@
     ./bar.nix
     ./apps.nix
     ./network.nix
+    ./monitors.nix
     ./visualizers.nix
     ./real-size.nix
     ./login.nix
@@ -24,6 +25,20 @@
       defaultText = lib.literalExpression "pkgs.nixos-artwork.wallpapers.nineish-dark-gray.gnomeFilePath";
       example = lib.literalExpression ''"''${config.home.homeDirectory}/Pictures/wallpaper.jpg"'';
       description = "Wallpaper of the desktop and the login screen.";
+    };
+
+    externalMonitor = {
+      desktops = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        example = [ "9" "10" ];
+        description = "Desktops moved to an external monitor while one is connected.";
+      };
+      position = lib.mkOption {
+        type = lib.types.enum [ "left-of" "right-of" "above" "below" ];
+        default = "right-of";
+        description = "Where the external monitor sits, relative to the primary screen.";
+      };
     };
   };
 

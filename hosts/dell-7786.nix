@@ -16,6 +16,8 @@
     desktop.enable = true;
     # LightDM's files live outside $HOME here: `sudo lightdm-setup`
     lightdm.enable = true;
+    # Desktop 9 goes to an external monitor while one is plugged in
+    externalMonitor.desktops = [ "9" ];
 
     laptop = {
       enable = true;
