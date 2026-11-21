@@ -13,6 +13,7 @@
     ./monitors.nix
     ./visualizers.nix
     ./real-size.nix
+    ./ranger.nix
     ./login.nix
   ];
 
