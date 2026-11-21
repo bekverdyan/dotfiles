@@ -1,12 +1,16 @@
-# sxhkd: window manager, launcher, volume and screenshot keys. Feature
+# sxhkd: window manager, launcher, volume, media and screenshot keys. Feature
 # keys live with their feature (network.nix, visualizers.nix,
 # ../laptop/screen.nix); every module adds to services.sxhkd.keybindings.
 { config, lib, pkgs, ... }:
 let
   inherit (import ../../lib { inherit lib; }) nord;
+  playerctl = "${pkgs.playerctl}/bin/playerctl";
 in
 {
   config = lib.mkIf config.dotfiles.desktop.enable {
+    # Tracks the most recently active media player, for playerctl
+    services.playerctld.enable = true;
+
     services.sxhkd = {
       enable = true;
       keybindings = {
@@ -30,6 +34,13 @@ in
         "XF86Audio{Raise,Lower}Volume" =
           "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%{+,-}";
         "XF86AudioMute" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+        # Media keys, also Bluetooth headphones' buttons (BlueZ turns AVRCP into
+        # these keys), for the most recently active player (playerctld). Play
+        # and Pause both toggle: headphones keep their own play state, which
+        # goes out of step when playback is paused elsewhere
+        "XF86AudioPlay" = "${playerctl} play-pause";
+        "XF86AudioPause" = "${playerctl} play-pause";
+        "XF86Audio{Next,Prev,Stop}" = "${playerctl} {next,previous,stop}";
         # Screenshot to the clipboard, ready to paste (no file): whole screen /
         # a dragged area or clicked window, with a Nord frost selection. Two
         # bindings, since sxhkd's {a,b} would split maim's r,g,b color
