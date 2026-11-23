@@ -23,8 +23,8 @@
     emulatorLimits = {
       enable = true;
       cpuQuota = "400%";
-      memoryHigh = "3584M";
-      memoryMax = "4G";
+      memoryHigh = "5376M";
+      memoryMax = "6G";
     };
 
     laptop = {
