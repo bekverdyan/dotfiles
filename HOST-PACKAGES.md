@@ -184,6 +184,46 @@ sudo cryptsetup luksOpen /dev/sdX1 data   # then mount /dev/mapper/data
 sudo cryptsetup close data
 ```
 
+## Optional: Android apps (Waydroid)
+
+Waydroid runs Android in an LXC container, which needs root, binder and a
+system service, so it comes from pacman. Weston, the window it draws into
+on X11, comes from Nix (`modules/desktop/waydroid.nix`).
+
+```sh
+sudo pacman -S waydroid
+sudo waydroid init                 # or: sudo waydroid init -s GAPPS -f (Google Play)
+sudo systemctl enable --now waydroid-container
+```
+
+Then `waydroid.enable = true` in the host file. Install an APK with
+`waydroid app install app.apk` (it starts Android if needed); Waydroid
+writes a `.desktop` entry for each app, so it shows up in rofi. The stock
+kernel's Rust binder works.
+
+**ARM apps.** Many APKs ship only ARM code. Intel's translation layer,
+libhoudini, runs them; it comes from `waydroid-script-git` (AUR), whose
+dependencies `python-inquirerpy` and `python-pfzy` are AUR-only too. As the
+normal user, not root:
+
+```sh
+sudo pacman -S --needed base-devel python-requests python-tqdm lzip python-prompt_toolkit
+for p in python-pfzy python-inquirerpy waydroid-script-git; do
+  git clone https://aur.archlinux.org/$p.git /tmp/$p && (cd /tmp/$p && makepkg -si)
+done
+waydroid session stop
+sudo waydroid-extras install libhoudini   # libndk on AMD CPUs
+```
+
+With Docker installed, Android has no internet until Docker's firewall lets
+it through (its FORWARD policy is DROP). This adds a drop-in to
+`waydroid-container.service` that allows `waydroid0` in `DOCKER-USER` each
+time the container starts, and applies it now:
+
+```sh
+waydroid-setup   # alias for: sudo "$(command -v waydroid-setup)"
+```
+
 ## Optional: zsh as the login shell
 
 zsh is installed and configured by Home Manager, but the login shell is still

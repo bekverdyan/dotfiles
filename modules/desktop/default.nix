@@ -15,6 +15,7 @@
     ./real-size.nix
     ./ranger.nix
     ./emulator-limits.nix
+    ./waydroid.nix
     ./login.nix
   ];
 

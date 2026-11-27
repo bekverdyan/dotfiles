@@ -28,7 +28,9 @@ theme) is defined here.
     `dotfiles.externalMonitor`), `visualizers.nix` (cava, MilkDrop), `real-size.nix`
     (Super+E: the emulator at a real screen's size), `emulator-limits.nix`
     (`dotfiles.emulatorLimits`: Android emulators capped in
-    `emulator.slice`), `login.nix`
+    `emulator.slice`), `waydroid.nix` (`dotfiles.waydroid`: Android apps
+    from rofi in a nested Weston window; a `waydroid` wrapper starts it),
+    `login.nix`
     (`dotfiles.lightdm.enable`: `lightdm-setup`). Option
     `dotfiles.wallpaper`.
   - `laptop/` (`dotfiles.laptop.enable`, plus `battery`, `adapter`,
