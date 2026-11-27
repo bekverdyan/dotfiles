@@ -27,6 +27,9 @@
       memoryMax = "4G";
     };
 
+    # Android apps (Waydroid, a host package) from rofi
+    waydroid.enable = true;
+
     laptop = {
       enable = true;
       battery = "BAT0";
